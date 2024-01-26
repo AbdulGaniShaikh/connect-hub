@@ -35,8 +35,8 @@ const ShareList = (props) => {
         <hr />
       </div>
       <div className="grid grow overflow-y-scroll ">
-        {!friends ? (
-          <NoData message="You don't have any friends" />
+        {friends.length <= 0 ? (
+          <NoData message="You don't have any friends." />
         ) : (
           <div>
             {friends.map((data) => (

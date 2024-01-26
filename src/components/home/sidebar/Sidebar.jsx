@@ -3,14 +3,15 @@ import profileDefault from './../../../assets/profile.jpg';
 
 const Sidebar = (props) => {
   const { profile, username, name, totalFriends, totalPosts } = props;
+  const { className } = props;
   const navigate = useNavigate();
   const onClick = () => {
     navigate('/profile');
   };
 
   return (
-    <aside id="logo-sidebar" className="fixed w-64 h-screen">
-      <div className="grid place-content-center	 flex-row bg-white w-full rounded-3xl overflow-hidden select-none">
+    <aside id="logo-sidebar" className={'fixed w-64 h-screen ' + className}>
+      <div className="grid place-content-center	flex-row bg-white w-full rounded-3xl overflow-hidden select-none">
         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-64 h-32 object-cover" />
         <img
           className="shadow-md shadow-gray-500 absolute top-20 left-1/2 -translate-x-1/2 rounded-full h-24 w-24 object-cover cursor-pointer"

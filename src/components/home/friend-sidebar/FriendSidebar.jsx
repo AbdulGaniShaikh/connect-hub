@@ -1,9 +1,10 @@
 import FriendRequests from './FriendRequests';
 import YourFriendsContainer from './YourFriendsContainer';
 
-const FriendSidebar = () => {
+const FriendSidebar = (props) => {
+  const { className } = props;
   return (
-    <div className="fixed right-40 w-64">
+    <div className={'fixed w-64 ' + className}>
       <FriendRequests />
       <div className="mt-5"></div>
       <YourFriendsContainer />

@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.show-when-hover {
+  display: none !important;
+}
+.cover-photo:hover .show-when-hover {
+  display: block !important;
+}

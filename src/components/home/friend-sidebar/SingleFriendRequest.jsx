@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import accept from './../../../assets/icons/check.svg';
 
 const SingleFriendRequest = (props) => {
-  var { username, email, userid, profile, onClick } = props;
+  var { username, email, id, profile, onClick } = props;
   profile = 'https://api.multiavatar.com/Binx%20Bond.png';
   const navigate = useNavigate();
   const onUserClick = () => {
-    navigate(`/user/${userid}`);
+    navigate(`/users/${id}`);
   };
   const acceptRequest = () => {
-    onClick(userid);
+    onClick(id);
   };
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">

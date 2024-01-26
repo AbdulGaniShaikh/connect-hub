@@ -2,6 +2,7 @@ import Comment from './Comment';
 import closeIcon from './../../assets/icons/close.svg';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import NoData from './NoData';
 
 export default function Comments(props) {
   const { onCloseClick, postId } = props;
@@ -23,9 +24,11 @@ export default function Comments(props) {
       </div>
       <hr className="mr-5" />
       <div className="h-full overflow-y-auto pb-5">
-        {comments.map((comment) => (
-          <Comment {...comment} />
-        ))}
+        {comments.length <= 0 ? (
+          <NoData message="No Comments yet." />
+        ) : (
+          comments.map((comment) => <Comment {...comment} />)
+        )}
       </div>
     </div>
   );

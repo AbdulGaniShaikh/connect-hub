@@ -1,6 +1,5 @@
 import Post from 'components/shared/Post';
-import NewPost from './NewPost';
-import profile from './../../assets/profile.jpg';
+import profile from './../assets/profile.jpg';
 import { useEffect, useState } from 'react';
 // import axios from 'axios';
 
@@ -27,7 +26,7 @@ const users = [
   }
 ];
 
-const MainContent = () => {
+const SavedPosts = () => {
   const [posts, setPosts] = useState(users);
 
   useEffect(() => {
@@ -36,7 +35,6 @@ const MainContent = () => {
 
   return (
     <div className="grid grid-flow-row gap-y-5 px-5 w-full pb-5">
-      <NewPost />
       {posts.map((post) => (
         <Post {...post} id={1} />
       ))}
@@ -44,4 +42,4 @@ const MainContent = () => {
   );
 };
 
-export default MainContent;
+export default SavedPosts;

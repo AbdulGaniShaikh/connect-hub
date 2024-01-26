@@ -6,14 +6,17 @@ module.exports = {
       colors: {
         primaryColor: '#df6688',
         primaryColorDark: '#d14169',
-        backgroundLight: '#fffafa'
+        backgroundLight: '#fffafa',
+        hoverGray: '#ffffff66',
+        chatRecieverColor: '#408FEF'
       },
       width: {
         120: '27rem',
         circleImage: '36px'
       },
       height: {
-        circleImage: '36px'
+        circleImage: '36px',
+        chat: '38rem'
       },
       fontSize: {
         defaultProfile: '36px'

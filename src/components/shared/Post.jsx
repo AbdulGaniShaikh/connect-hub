@@ -112,7 +112,7 @@ const Post = (props) => {
   };
 
   return (
-    <div className="mt-5 grid grid-flow-row bg-white p-4 rounded-3xl w-full">
+    <div className="grid grid-flow-row bg-white p-4 rounded-3xl w-full">
       <div className="flex justify-start items-center w-fit ">
         <img
           src={profile ? profile : profilePlaceholder}
@@ -186,7 +186,7 @@ const Post = (props) => {
         ></div>
         <div
           ref={commentsDialogRef}
-          className="p-10 h-full ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
+          className="p-10 h-full max-md:w-full max-xl:w-1/2 ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
         >
           <Comments onCloseClick={onCommentCloseClick} postId={postId} />
         </div>
@@ -201,7 +201,7 @@ const Post = (props) => {
         ></div>
         <div
           ref={forwardDialogRef}
-          className="p-10 h-full ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
+          className="p-10 h-full max-md:w-full max-xl:w-1/2 ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
         >
           <ShareList onCloseClick={onForwardCloseClick} friends={friends} />
         </div>

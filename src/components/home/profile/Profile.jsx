@@ -1,8 +1,9 @@
-import Post from 'components/shared/Post';
-import NewPost from './NewPost';
-import profile from './../../assets/profile.jpg';
 import { useEffect, useState } from 'react';
-// import axios from 'axios';
+import NewPost from '../NewPost';
+import cover from './../../../assets/profile.jpg';
+import Post from 'components/shared/Post';
+import ProfileSection from './ProfileSection';
+import DescriptionSection from './DescriptionSection';
 
 const users = [
   {
@@ -12,7 +13,7 @@ const users = [
     },
     date: '12:30pm',
     postId: '1',
-    postImage: profile,
+    postImage: cover,
     postText: 'Something in the way'
   },
   {
@@ -27,15 +28,16 @@ const users = [
   }
 ];
 
-const MainContent = () => {
+const Profile = () => {
   const [posts, setPosts] = useState(users);
 
   useEffect(() => {
     setPosts(users);
   }, []);
-
   return (
-    <div className="grid grid-flow-row gap-y-5 px-5 w-full pb-5">
+    <div className="px-5 w-full pb-5 grid grid-flow-row gap-y-5">
+      <ProfileSection />
+      <DescriptionSection />
       <NewPost />
       {posts.map((post) => (
         <Post {...post} id={1} />
@@ -44,4 +46,4 @@ const MainContent = () => {
   );
 };
 
-export default MainContent;
+export default Profile;

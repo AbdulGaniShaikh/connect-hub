@@ -3,7 +3,7 @@ const NoData = (props) => {
   const { message } = props;
   return (
     <div className="flex flex-col justify-center items-center text-lg">
-      <img src={noData} alt="No data" />
+      <img src={noData} alt="No data" className="size-64" />
       <p>{message}</p>
     </div>
   );

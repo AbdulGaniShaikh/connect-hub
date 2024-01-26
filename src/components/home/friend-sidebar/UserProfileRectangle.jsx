@@ -1,13 +1,11 @@
-import { useNavigate } from 'react-router-dom';
 import profilePlaceholder from './../../../assets/profile.jpg';
+import { Link } from 'react-router-dom/dist';
 
 const UserProfileRectangle = (props) => {
   const { username, email, profile, userId } = props;
-  const navigate = useNavigate();
-  const onClick = () => navigate(`/users/${userId}`);
   return (
-    <div
-      onClick={onClick}
+    <Link
+      to={`/users/${userId}`}
       className="flex justify-start items-center w-full p-2 rounded-md overflow-hidden cursor-pointer hover:bg-gray-100"
     >
       <img
@@ -19,7 +17,7 @@ const UserProfileRectangle = (props) => {
         <p className="font-medium overflow-ellipsis overflow-hidden w-40">{username}</p>
         <p className="font-thin text-xs overflow-ellipsis overflow-hidden w-40">{email}</p>
       </div>
-    </div>
+    </Link>
   );
 };
 
