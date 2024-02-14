@@ -1,47 +1,30 @@
 import { useEffect, useState } from 'react';
 import NewPost from '../NewPost';
-import cover from './../../../assets/profile.jpg';
-import Post from 'components/shared/Post';
+import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import ProfileSection from './ProfileSection';
 import DescriptionSection from './DescriptionSection';
-
-const users = [
-  {
-    user: {
-      username: 'tehgan',
-      userId: '1'
-    },
-    date: '12:30pm',
-    postId: '1',
-    postImage: cover,
-    postText: 'Something in the way'
-  },
-  {
-    user: {
-      username: 'tehgan',
-      userId: '1'
-    },
-    date: '12:30pm',
-    postId: '2',
-    postImage: 'https://wallpapercrafter.com/th8001/520604-Movie-Crossover-Deadpool-Thanos-4K.jpg',
-    postText: 'second image'
-  }
-];
+import { useSelector } from 'react-redux';
+import UserPosts from 'components/shared/UserPosts';
+import ProfileSkeleton from 'components/skeletons/ProfileSkeleton';
 
 const Profile = () => {
-  const [posts, setPosts] = useState(users);
-
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
+  const user1 = useSelector(selectUserInfo);
   useEffect(() => {
-    setPosts(users);
+    window.scrollTo(0, 0);
   }, []);
+  useEffect(() => {
+    setUser(user1);
+    setLoading(false);
+  }, [user1]);
   return (
     <div className="px-5 w-full pb-5 grid grid-flow-row gap-y-5">
-      <ProfileSection />
-      <DescriptionSection />
-      <NewPost />
-      {posts.map((post) => (
-        <Post {...post} id={1} />
-      ))}
+      {loading && <ProfileSkeleton />}
+      <ProfileSection user={user} />
+      <DescriptionSection user={user} />
+      <NewPost user={user} />
+      <UserPosts user={user} />
     </div>
   );
 };

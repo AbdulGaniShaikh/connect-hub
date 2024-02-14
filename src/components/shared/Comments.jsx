@@ -1,20 +1,28 @@
 import Comment from './Comment';
 import closeIcon from './../../assets/icons/close.svg';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import NoData from './NoData';
+import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
+import { postService, toastService } from 'service';
 
 export default function Comments(props) {
   const { onCloseClick, postId } = props;
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('fetching comments');
-    axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`).then((response) => {
-      setComments(response.data);
-    });
-    // .catch((response) => alert(response));
-  }, []);
+    postService
+      .getComments(postId, 0)
+      .then((res) => {
+        setComments(res.data.content);
+      })
+      .catch((error) => {
+        toastService.error(`error loading comments\nReason: ${error.response.data?.message}`);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [postId]);
 
   return (
     <div className="h-full bg-white rounded-3xl py-5 pl-5 overflow-hidden">
@@ -24,11 +32,14 @@ export default function Comments(props) {
       </div>
       <hr className="mr-5" />
       <div className="h-full overflow-y-auto pb-5">
-        {comments.length <= 0 ? (
-          <NoData message="No Comments yet." />
-        ) : (
-          comments.map((comment) => <Comment {...comment} />)
-        )}
+        {loading &&
+          Array(15)
+            .fill(0)
+            .map((_, id) => <UserCardSkeleton />)}
+        {!loading && comments.length === 0 && <NoData message="No Comments yet." />}
+        {comments.map((comment, id) => (
+          <Comment key={id} {...comment} />
+        ))}
       </div>
     </div>
   );

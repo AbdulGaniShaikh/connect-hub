@@ -1,6 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import authService from './../../../service/authService';
+import profileDefault from './../../../assets/icons/user.svg';
+import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
+import { useSelector } from 'react-redux';
+import { imageUrl } from './../../../global';
 
 const Navbar = (props) => {
+  const navigate = useNavigate();
+  const user = useSelector(selectUserInfo);
+  const onLogoutClick = () => {
+    authService
+      .logout()
+      .then(() => {
+        navigate('/login');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <nav className="z-10 fixed top-0 left-0 bg-white w-full py-2.5 border-b-2 border-gray-200 xl:px-40">
       <div className="px-5 grid grid-cols-2 max-sm:grid-cols-2 justify-between items-center ">
@@ -15,14 +33,18 @@ const Navbar = (props) => {
           <Link to="/search">
             <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
-          <Link to="/login">
+          <Link onClick={onLogoutClick}>
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
           </Link>
           <Link to="/inbox">
             <i className="fa-regular fa-message"></i>
           </Link>
           <Link to="profile">
-            <img src="logo512.png" alt="profile" className="h-circleImage w-circleImage object-cover" />
+            <img
+              src={user.profileImageId ? `${imageUrl}/${user.profileImageId}` : profileDefault}
+              alt="profile"
+              className="h-circleImage w-circleImage rounded-full object-cover overflow-hidden"
+            />
           </Link>
         </div>
       </div>

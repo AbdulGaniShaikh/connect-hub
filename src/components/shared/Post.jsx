@@ -1,211 +1,251 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Comments from './Comments';
-import profilePlaceholder from './../../assets/profile.jpg';
+import profilePlaceholder from './../../assets/icons/user.svg';
 import shareIcon from './../../assets/icons/send.svg';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ShareList from './ShareList';
-// import axios from 'axios';
-import useScrollBlock from 'hooks/useScrollBlock';
-
-const friends = [
-  {
-    profile: 'logo512.png',
-    username: 'tegan1',
-    userId: '1',
-    email: 'shkhabdilgani@gmail.com'
-  },
-  {
-    profile: 'logo512.png',
-    username: 'tegan2',
-    userId: '2',
-    email: 'shkhabdilgani@gmail.com'
-  },
-  {
-    profile: 'logo512.png',
-    username: 'tegan3',
-    userId: '3',
-    email: 'shkhabdilgani@gmail.com'
-  }
-];
+import { imageUrl } from './../../global';
+import Model from './Model';
+import { postService, toastService } from 'service';
+import { useSelector } from 'react-redux';
+import { selectUserInfo } from './../../redux/slices/userInfoSlice';
+import { HttpStatusCode } from 'axios';
 
 const Post = (props) => {
-  const { postId, postText, postImage, user, date } = props;
-  const { username, userId, profile } = user;
-  const navigate = useNavigate();
-  const [blockScroll, allowScroll] = useScrollBlock();
+  const { postId, totalComments, text, imageId, createDate, userId, username, profileImageId } = props;
+  const [totalLikes, setTotalLikes] = useState(props.totalLikes);
 
-  useEffect(() => {
-    console.log('fetching in post');
-  }, []);
+  const id = useSelector(selectUserInfo)?.userId;
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  var date = null;
+  try {
+    date = new Intl.DateTimeFormat('en-US', options).format(new Date(createDate));
+  } catch (err) {
+    date = userId;
+  }
 
-  const likeRef = useRef(null);
-  const saveRef = useRef(null);
-  const commentsDialogDiv = useRef(null);
-  const commentsDialogRef = useRef(null);
-  const forwardDialogRef = useRef(null);
-  const forwardDialogDiv = useRef(null);
+  const likedStyle = 'fa-heart fa-solid text-red-600 fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer';
+  const unLikedStyle = 'fa-heart fa-regular fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer';
 
-  const [postButtonVisible, setPostButtonVisible] = useState(false);
+  const savedStyle = 'fa-bookmark fa-solid fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer';
+  const unSavedStyle = 'fa-bookmark fa-regular fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer';
+
+  const [showComments, setShowComments] = useState(false);
+  const [showSharelist, setShowSharelist] = useState(false);
+
   const [isLiked, setLiked] = useState(false);
   const [isSave, setSave] = useState(false);
-
-  const onCommentChange = (data) => {
-    if (data.target.value.trim() === '') {
-      setPostButtonVisible(false);
-    } else {
-      setPostButtonVisible(true);
-    }
-  };
+  const [canLike, setCanLike] = useState(false);
+  const [canSave, setCanSave] = useState(false);
+  const [comment, setComment] = useState('');
 
   const onLikeClick = () => {
+    if (!canLike) return;
+    setCanLike(false);
     if (!isLiked) {
-      likeRef.current.classList.remove('fa-regular');
-      likeRef.current.classList.add('fa-solid');
-      likeRef.current.classList.add('text-red-600');
+      setLiked(true);
+
+      postService
+        .likePost(postId, id)
+        .then(() => {
+          setLiked(true);
+          setTotalLikes(totalLikes + 1);
+        })
+        .catch((error) => {
+          if (error.response.status === HttpStatusCode.Conflict) {
+            setLiked(true);
+          } else {
+            setLiked(false);
+          }
+        })
+        .finally(() => {
+          setCanLike(true);
+        });
     } else {
-      likeRef.current.classList.add('fa-regular');
-      likeRef.current.classList.remove('fa-solid');
-      likeRef.current.classList.remove('text-red-600');
+      setLiked(false);
+      postService
+        .unlikePost(postId, id)
+        .then(() => {
+          setLiked(false);
+          setTotalLikes(totalLikes - 1);
+        })
+        .catch((error) => {
+          setLiked(true);
+        })
+        .finally(() => {
+          setCanLike(true);
+        });
     }
-    setLiked(!isLiked);
   };
 
   const onSaveClick = () => {
+    if (!canSave) return;
+    setCanSave(false);
     if (!isSave) {
-      saveRef.current.classList.remove('fa-regular');
-      saveRef.current.classList.add('fa-solid');
+      setSave(true);
+      postService
+        .savePost(postId, id)
+        .then(() => {
+          setSave(true);
+        })
+        .catch((error) => {
+          if (error.response.status === HttpStatusCode.Conflict) {
+            setSave(true);
+          } else {
+            setSave(false);
+          }
+        })
+        .finally(() => {
+          setCanSave(true);
+        });
     } else {
-      saveRef.current.classList.add('fa-regular');
-      saveRef.current.classList.remove('fa-solid');
+      setSave(false);
+      postService
+        .unsavePost(postId, id)
+        .then(() => {
+          setSave(false);
+        })
+        .catch((error) => {
+          setSave(true);
+        })
+        .finally(() => {
+          setCanSave(true);
+        });
     }
-    setSave(!isSave);
   };
 
   const onCommentClick = () => {
-    commentsDialogDiv.current.classList.remove('hidden');
-    commentsDialogRef.current.classList.remove('translate-y-full');
-    // document.body.style.overflow = 'hidden';
-    blockScroll();
-  };
-  const onCommentCloseClick = () => {
-    commentsDialogDiv.current.classList.add('hidden');
-    commentsDialogRef.current.classList.add('translate-y-full');
-    // document.body.style.overflow = 'unset';
-    allowScroll();
+    setShowComments(!showComments);
   };
 
   const onForwardClick = () => {
-    forwardDialogDiv.current.classList.remove('hidden');
-    forwardDialogRef.current.classList.remove('translate-y-full');
-    // document.body.style.overflow = 'hidden';
-    blockScroll();
-  };
-  const onForwardCloseClick = () => {
-    forwardDialogDiv.current.classList.add('hidden');
-    forwardDialogRef.current.classList.add('translate-y-full');
-    // document.body.style.overflow = 'unset';
-    allowScroll();
+    setShowSharelist(!showSharelist);
   };
 
-  const onProfileClick = () => {
-    navigate(`/users/${userId}`);
+  const postNewComment = () => {
+    postService
+      .postComment(postId, comment, id)
+      .then((res) => {
+        toastService.success('New comment added');
+        setComment('');
+      })
+      .catch((error) => {
+        if (error.response.status >= 500) {
+          toastService.error("Internal server error. Couldn't add new comment");
+        } else {
+          toastService.error(error.response.data?.message);
+        }
+      });
   };
+
+  useEffect(() => {
+    if (!postId || !id) return;
+    postService
+      .isLikedAndSaved(postId, id)
+      .then((res) => {
+        setLiked(res.data.liked);
+        setSave(res.data.saved);
+        setCanLike(true);
+        setCanSave(true);
+      })
+      .catch((error) => {
+        if (error.response.status >= 500) {
+          toastService.error("Internal server error. Couldn't fetch like and bookmark data");
+        } else {
+          toastService.error(error.response.data?.message);
+        }
+      });
+  }, [postId, id]);
 
   return (
     <div className="grid grid-flow-row bg-white p-4 rounded-3xl w-full">
-      <div className="flex justify-start items-center w-fit ">
+      <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit ">
         <img
-          src={profile ? profile : profilePlaceholder}
+          src={profileImageId ? `${imageUrl}/${profileImageId}` : profilePlaceholder}
           alt=""
-          onClick={onProfileClick}
-          className="w-circleImage h-circleImage rounded-full bg-gray-100 object-cover cursor-pointer "
+          className="w-circleImage h-circleImage rounded-full bg-gray-100 aspect-square object-cover cursor-pointer "
         />
         <div className="text-gray-900 focus:outline-none w-full text-sm mx-2 ">
-          <p className="font-medium cursor-pointer" onClick={onProfileClick}>
-            {username ? username : 'username'}
-          </p>{' '}
-          <p className="text-xs font-thin">uploaded {date ? `on ${date}` : 'now'}</p>
+          <p className="font-medium cursor-pointer">{username ? username : 'username'}</p>{' '}
+          <p className="text-xs font-thin">uploaded on {date}</p>
         </div>
-      </div>
-      <div className={postText ? 'my-2' : 'hidden'}>
-        <p>{postText}</p>
+      </Link>
+
+      <div className={text ? 'my-2' : 'hidden'}>
+        <p>{text}</p>
       </div>
 
       <div
         className={
-          postImage
-            ? 'flex justify-center items-start mt-2 center rounded-md mb-3 bg-gray-100 overflow-hidden'
-            : 'hidden'
+          imageId ? 'flex justify-center items-start mt-2 center rounded-md mb-3 bg-gray-100 overflow-hidden' : 'hidden'
         }
       >
-        <img style={{ height: '50vh' }} src={postImage} alt="post" className="object-fill" />
+        <img
+          style={{ height: '50vh' }}
+          src={imageId ? `${imageUrl}/${imageId}` : profilePlaceholder}
+          alt="post"
+          className="object-contain aspect-video"
+        />
       </div>
 
       <div className="flex justify-between items-center">
         <div className="flex justify-between items-center w-1/4">
-          <i
-            ref={likeRef}
-            className="fa-regular fa-heart fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer"
-            onClick={onLikeClick}
-          ></i>
+          <i className={isLiked ? likedStyle : unLikedStyle} onClick={onLikeClick}></i>
           <i onClick={onCommentClick} className="fa-regular fa-comment fa-lg cursor-pointer"></i>
           <img onClick={onForwardClick} src={shareIcon} alt="share" className="size-5 cursor-pointer" />
         </div>
         <div>
-          <i
-            ref={saveRef}
-            onClick={onSaveClick}
-            className="fa-regular fa-bookmark fa-lg active:scale-75 ease-in-out duration-200 cursor-pointer"
-          ></i>
+          <i onClick={onSaveClick} className={isSave ? savedStyle : unSavedStyle}></i>
         </div>
       </div>
-      <p className="text-sm py-2">11,111 likes</p>
+      <p className="text-sm py-2">{totalLikes} likes</p>
       <p onClick={onCommentClick} className="text-gray-700 font-thin my-2 cursor-pointer w-fit ">
-        View all comments
+        View all {totalComments !== 0 && totalComments} comments
       </p>
       <hr className="h-px bg-gray-200 border-0" />
       <div className="flex justify-between items-center">
         <input
           alt="post-data"
           type="text"
-          name="post-data"
-          id="comment-textarea"
+          name="comment"
           placeholder="Add a comment"
-          onChange={onCommentChange}
+          autoComplete="off"
+          value={comment}
+          onChange={(e) => {
+            setComment(e.target.value);
+          }}
           className="text-gray-900 focus:outline-none w-full text-sm font-medium py-2.5"
         ></input>
-        {postButtonVisible && <p className="text-primaryColor font-bold cursor-pointer">Post</p>}
+        {comment.trim().length > 0 && (
+          <p onClick={postNewComment} className="text-primaryColor font-bold cursor-pointer">
+            Post
+          </p>
+        )}
       </div>
-      {/* comment dialogbox */}
-      <div className="z-10">
-        <div
-          onClick={onCommentCloseClick}
-          style={{ background: 'rgba(0,0,0,0.2)' }}
-          className="fixed left-0 top-0 h-full w-full hidden"
-          ref={commentsDialogDiv}
-        ></div>
-        <div
-          ref={commentsDialogRef}
-          className="p-10 h-full max-md:w-full max-xl:w-1/2 ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
+      {showComments && (
+        <Model
+          onClose={() => {
+            setShowComments(false);
+          }}
         >
-          <Comments onCloseClick={onCommentCloseClick} postId={postId} />
-        </div>
-      </div>
-      {/* forward dialog box */}
-      <div className="z-10">
-        <div
-          onClick={onForwardCloseClick}
-          style={{ background: 'rgba(0,0,0,0.2)' }}
-          className="fixed left-0 top-0 h-full w-full hidden"
-          ref={forwardDialogDiv}
-        ></div>
-        <div
-          ref={forwardDialogRef}
-          className="p-10 h-full max-md:w-full max-xl:w-1/2 ease-in-out duration-300 translate-y-full w-1/3 z-20 fixed left-1/2 -translate-x-1/2 top-0"
+          <Comments postId={postId} onCloseClick={() => setShowComments(false)} />
+        </Model>
+      )}
+      {showSharelist && (
+        <Model
+          onClose={() => {
+            setShowSharelist(false);
+          }}
         >
-          <ShareList onCloseClick={onForwardCloseClick} friends={friends} />
-        </div>
-      </div>
+          <ShareList postId={postId} userId={id} onCloseClick={() => setShowSharelist(false)} />
+        </Model>
+      )}
     </div>
   );
 };

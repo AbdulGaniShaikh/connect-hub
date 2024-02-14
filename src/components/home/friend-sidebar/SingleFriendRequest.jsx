@@ -1,34 +1,51 @@
-import { useNavigate } from 'react-router-dom';
-import accept from './../../../assets/icons/check.svg';
+import { Link } from 'react-router-dom';
+import { check, user } from './../../../assets/icons';
+import { imageUrl } from 'global';
+import { friendService, toastService } from 'service';
+import { HttpStatusCode } from 'axios';
+import { useDispatch } from 'react-redux';
+import { removeRequest } from './../../../redux/slices/friendRequestsSlice';
 
 const SingleFriendRequest = (props) => {
-  var { username, email, id, profile, onClick } = props;
-  profile = 'https://api.multiavatar.com/Binx%20Bond.png';
-  const navigate = useNavigate();
-  const onUserClick = () => {
-    navigate(`/users/${id}`);
-  };
+  var { username, email, userId, friendRequestId, profileImageId, loggedInId } = props;
+  const dispatch = useDispatch();
+
   const acceptRequest = () => {
-    onClick(id);
+    friendService
+      .acceptFriendRequest(userId, loggedInId)
+      .then((res) => {
+        if (res.status === HttpStatusCode.Ok) {
+          toastService.success('accepted friend request');
+          dispatch(removeRequest(friendRequestId));
+        }
+      })
+      .catch((error) => {
+        toastService.error(error.response.data?.message);
+      });
   };
   return (
-    <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
+    <div className="flex w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
-        <img
-          onClick={onUserClick}
-          src={profile ? profile : 'logo512.png'}
-          alt=""
-          className="rounded-full h-circleImage w-circleImage"
-        />
-        <div onClick={onUserClick} className="text-gray-900 grow text-sm px-2.5 overflow-hidden">
+        <Link
+          to={`/users/${userId}`}
+          className="flex justify-center items-center rounded-full h-circleImage w-circleImage overflow-hidden"
+        >
+          <img
+            src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
+            alt=""
+            className="w-full h-full aspect-square object-cover bg-gray-100"
+          />
+        </Link>
+
+        <Link to={`/users/${userId}`} className="text-gray-900 grow text-sm px-2.5 overflow-hidden">
           <p className="font-medium overflow-ellipsis overflow-hidden ">{username ? username : 'username'}</p>
           <p className="font-thin text-xs overflow-ellipsis overflow-hidden">{email ? email : 'email'}</p>
-        </div>
+        </Link>
         <div
           onClick={acceptRequest}
           className="flex-none flex justify-center items-center p-1 rounded-md bg-green-400 hover:bg-green-500"
         >
-          <img src={accept} alt="" className="size-5 " />
+          <img src={check} alt="" className="size-5 " />
         </div>
       </div>
     </div>

@@ -1,11 +1,19 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import closeIcon from './../../assets/icons/close.svg';
+import profileDefault from './../../assets/icons/user.svg';
 import NoData from './NoData';
+import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
+import { imageUrl } from 'global';
+import { friendService, toastService } from 'service';
+import useSocket from 'hooks/useSocket';
 
 const ShareList = (props) => {
   const { onCloseClick } = props;
-  const { friends } = props;
+  const { postId, userId } = props;
   const [checked, setChecked] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [friends, setFriends] = useState([]);
+  const [publishMessage] = useSocket(userId);
 
   const handleCheck = (event) => {
     var updatedList = [...checked];
@@ -17,12 +25,31 @@ const ShareList = (props) => {
     setChecked(updatedList);
   };
 
+  useEffect(() => {
+    if (!userId) return;
+    friendService
+      .getFriends(userId, 0, 10)
+      .then((res) => {
+        setFriends(res.data?.content);
+      })
+      .catch((error) => {
+        const res = error.response;
+        if (res.status >= 500) {
+          toastService.error('Internal Server error');
+        } else {
+          toastService.error(res.data?.message);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [userId]);
+
   const onSendClick = () => {
-    let message = '';
-    checked.forEach((id) => {
-      message += id + ' ';
+    checked.forEach((recieverId, i) => {
+      publishMessage(recieverId, postId, true);
     });
-    alert(message);
+    onCloseClick();
   };
 
   return (
@@ -34,16 +61,15 @@ const ShareList = (props) => {
         </div>
         <hr />
       </div>
-      <div className="grid grow overflow-y-scroll ">
-        {friends.length <= 0 ? (
-          <NoData message="You don't have any friends." />
-        ) : (
-          <div>
-            {friends.map((data) => (
-              <UsersWithRadioButton {...data} onClick={handleCheck} />
-            ))}
-          </div>
-        )}
+      <div className="flex flex-col h-full overflow-y-scroll">
+        {loading &&
+          Array(15)
+            .fill(0)
+            .map((_, id) => <UserCardSkeleton />)}
+        {!loading && friends.length === 0 && <NoData message="You don't have any friends." />}
+        {friends.map((user, id) => (
+          <UsersWithRadioButton key={id} {...user} onClick={handleCheck} />
+        ))}
       </div>
       {checked.length > 0 && (
         <div className="mr-5 pt-5">
@@ -61,7 +87,7 @@ const ShareList = (props) => {
 };
 
 const UsersWithRadioButton = (props) => {
-  const { username, email, userId, profile, onClick } = props;
+  const { username, email, userId, profileImageId, onClick } = props;
   const checkBoxRef = useRef(null);
 
   const onUserClick = () => {
@@ -75,12 +101,12 @@ const UsersWithRadioButton = (props) => {
   return (
     <div
       onClick={onUserClick}
-      className="flex justify-start items-center w-full px-5 rounded-lg overflow-hidden cursor-pointer hover:bg-gray-100"
+      className="flex justify-start h-fit items-center w-full px-5 rounded-lg overflow-hidden cursor-pointer hover:bg-gray-100"
     >
       <img
-        src={profile}
+        src={profileImageId ? `${imageUrl}/${profileImageId}` : profileDefault}
         alt="profile"
-        className="w-circleImage h-circleImage rounded-full object-cover bg-primaryColor"
+        className="w-circleImage h-circleImage rounded-full aspect-square object-cover bg-primaryColor"
       />
       <div className="text-gray-900 focus:outline-none w-full text-sm p-2.5">
         <p className="font-medium overflow-ellipsis overflow-hidden w-40">{username}</p>

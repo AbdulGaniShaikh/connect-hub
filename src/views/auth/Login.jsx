@@ -1,21 +1,60 @@
-// import { useState } from 'react';
-import OAuthGoogleButton from '../../components/auth/OAuthGoogleButton';
 import Waves from '../../assets/side-wave.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Spinner from './../../components/shared/Spinner';
+import { useState } from 'react';
+import { authService, storageService, toastService } from './../../service';
+import useIsLoggedIn from './../../hooks/useIsLoggedIn';
+import { setUserInfo } from './../../redux/slices/userInfoSlice';
+import { HttpStatusCode } from 'axios';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  useIsLoggedIn();
+
+  const login = (event) => {
+    event.preventDefault();
+    setLoading(true);
+    authService
+      .login(event.target.email.value, event.target.password.value)
+      .then((res) => {
+        dispatch(setUserInfo(res.data));
+        storageService.saveUserId(res.data.userId);
+        toastService.success('Logged In successfully');
+        navigate('/');
+      })
+      .catch((error) => {
+        let res = error.response;
+        if (res.status === HttpStatusCode.BadRequest) {
+          for (var property in res.data) {
+            if (res.data.hasOwnProperty(property)) {
+              toastService.error(res.data[property]);
+            }
+          }
+        } else {
+          if (res.data.message) toastService.error(res.data?.message);
+          else toastService.error(error.message);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
-    <div className="bg-slate-50 grid grid-cols-1">
+    <div className="grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
       <div className="z-30 h-screen flex justify-start items-center mx-10">
-        <form className="bg-white p-10 shadow-lg rounded-3xl w-120 max-sm:w-full">
+        <form onSubmit={login} className="bg-white p-10 shadow-lg rounded-3xl w-120 max-sm:w-full">
           <h1 className="font-medium text-4xl	">ConnectHub</h1>
           <p>Log in to your account.</p>
           <div className="mb-5 mt-6">
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
               Email
             </label>
-
             <input
               type="email"
               id="email"
@@ -44,10 +83,9 @@ const Login = () => {
                   type="checkbox"
                   value=""
                   className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
-                  required
                 />
               </div>
-              <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-900">
+              <label htmlFor="remember" className="select-none ms-2 text-sm font-medium text-gray-900">
                 Remember me
               </label>
             </div>
@@ -57,18 +95,11 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
+            className="flex justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
           >
+            {isLoading && <Spinner />}
             Login
           </button>
-          <div className="grid grid-cols-3 items-center ">
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-            <p className="justify-self-center">or</p>
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-          </div>
-          <div className="flex justify-center items-center">
-            <OAuthGoogleButton />
-          </div>
           <div className="flex py-2.5 mt-2.5 text-sm">
             <p>Don't have an account?</p>
             <Link to="/sign-up">

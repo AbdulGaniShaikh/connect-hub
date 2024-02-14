@@ -11,7 +11,7 @@ export const friendRequests = createSlice({
     },
     removeRequest: (state, action) => {
       const id = action.payload;
-      state.requests = state.requests.filter((request) => id !== request.id);
+      state.requests = state.requests.filter((request) => id !== request.userId);
     }
   }
 });

@@ -14,6 +14,7 @@ import userRemove from './user-remove.svg';
 import user from './user.svg';
 import users from './users.svg';
 import userPlus from './user-plus.svg';
+import emailIcon from './email.svg';
 
 export {
   bookmark,
@@ -31,5 +32,6 @@ export {
   userRemove,
   user,
   users,
-  userPlus
+  userPlus,
+  emailIcon
 };

@@ -1,59 +1,128 @@
-import accept from './../assets/icons/check.svg';
-import decline from './../assets/icons/close.svg';
+import accept from 'assets/icons/check.svg';
+import decline from 'assets/icons/close.svg';
 import NoData from 'components/shared/NoData';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeRequest, selectRequests } from './../redux/slices/friendRequestsSlice';
+import { removeRequest } from './../redux/slices/friendRequestsSlice';
+import { imageUrl } from 'global';
+import { user } from 'assets/icons';
+import { useEffect, useState } from 'react';
+import { friendService, toastService } from 'service';
+import {
+  decrementTotalFriendsCount,
+  incrementTotalFriendsCount,
+  selectUserInfo
+} from './../redux/slices/userInfoSlice';
+import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
+import { HttpStatusCode } from 'axios';
+import { Pagination } from '@mui/material';
 
 const FriendRequests = () => {
-  const friends = useSelector(selectRequests);
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
   const dispatch = useDispatch();
+  const { userId } = useSelector(selectUserInfo);
 
-  const onDecline = (id) => {
-    dispatch(removeRequest(id));
-    console.log('friend request declined');
+  const onDecline = async (id, username) => {
+    try {
+      var res = await friendService.rejectFriendRequest(id, userId);
+      if (res.status === HttpStatusCode.Ok) {
+        toastService.success(`Rejected ${username}'s friend request`);
+        dispatch(removeRequest(id));
+        dispatch(decrementTotalFriendsCount());
+        setFriendRequests(friendRequests.filter((request) => id !== request.userId));
+        fetchFriendRequest();
+      }
+    } catch (error) {}
   };
-  const onAccept = (id) => {
-    dispatch(removeRequest(id));
-    console.log('friend request accepted');
+  const onAccept = async (id, username) => {
+    try {
+      var res = await friendService.acceptFriendRequest(id, userId);
+      if (res.status === HttpStatusCode.Ok) {
+        toastService.success(`Accepted ${username}'s friend request`);
+        dispatch(removeRequest(id));
+        dispatch(incrementTotalFriendsCount());
+        setFriendRequests(friendRequests.filter((request) => id !== request.userId));
+        fetchFriendRequest();
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    fetchFriendRequest();
+  }, [userId, page]);
+
+  const fetchFriendRequest = () => {
+    friendService
+      .getFriendRequests(userId, page.pageNumber - 1)
+      .then((res) => {
+        setFriendRequests(res.data?.content);
+        var { totalPages } = res.data;
+        if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
+      })
+      .catch((error) => {
+        toastService.error(error.response.data?.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
     <div className="px-5 h-full w-full pb-5 grid grid-flow-row">
       <div className="bg-white rounded-3xl h-full w-full p-5">
         <p className="font-medium pb-2">Friend Request</p>
-        {friends.length <= 0 ? (
-          <NoData message="You don't have any friends requests" />
-        ) : (
-          friends.map((data) => {
-            return <FriendRequest {...data} onDecline={onDecline} onAccept={onAccept} />;
-          })
-        )}
+        {loading &&
+          Array(5)
+            .fill(1)
+            .map((_, i) => <UserCardSkeleton key={i} />)}
+        {!loading && friendRequests.length === 0 && <NoData message="You don't have any friends requests" />}
+        {friendRequests.map((data) => {
+          return <FriendRequest key={data.userId} {...data} onDecline={onDecline} onAccept={onAccept} />;
+        })}
       </div>
+      {!loading && friendRequests.length !== 0 && (
+        <div className="flex flex-col justify-center items-center pt-5">
+          <Pagination
+            count={page.totalPages}
+            variant="outlined"
+            shape="rounded"
+            size="large"
+            page={page.pageNumber}
+            onChange={(_, i) => {
+              setPage({ ...page, pageNumber: i });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 const FriendRequest = (props) => {
-  const { profile, username, email, id, onDecline, onAccept } = props;
+  const { profileImageId, username, email, userId, onDecline, onAccept } = props;
   const navigate = useNavigate();
+
   const onUserClick = () => {
-    navigate(`/users/${id}`);
+    navigate(`/users/${userId}`);
   };
   const onDeclineClick = () => {
-    onDecline(id);
+    onDecline(userId, username);
   };
   const onAcceptClick = () => {
-    onAccept(id);
+    onAccept(userId, username);
   };
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
         <img
           onClick={onUserClick}
-          src={profile ? profile : 'logo.svg'}
-          alt={id}
-          className="rounded-full h-circleImage w-circleImage"
+          src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
+          alt={userId}
+          className="rounded-full h-circleImage w-circleImage aspect-square object-cover"
         />
         <div onClick={onUserClick} className=" text-gray-900 grow text-sm px-2.5 overflow-hidden">
           <p className="font-medium overflow-ellipsis overflow-hidden ">{username ? username : 'username'}</p>

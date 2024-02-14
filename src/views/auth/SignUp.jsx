@@ -1,8 +1,52 @@
-import OAuthGoogleButton from '../../components/auth/OAuthGoogleButton';
 import Waves from './../../assets/side-wave.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import Spinner from './../../components/shared/Spinner';
+import { authService, storageService, toastService } from './../../service';
+import { HttpStatusCode } from 'axios';
+import useIsLoggedIn from 'hooks/useIsLoggedIn';
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
+  useIsLoggedIn();
+  const signUp = (event) => {
+    event.preventDefault();
+    setLoading(true);
+
+    const form = {
+      username: event.target.username.value,
+      email: event.target.email.value,
+      password: event.target.password.value
+    };
+
+    authService
+      .signUp(form)
+      .then((res) => {
+        if (res.status === HttpStatusCode.Created) {
+          toastService.success('Registered successfully');
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        let res = error?.response;
+        console.log(error);
+        if (res?.status === HttpStatusCode.BadRequest) {
+          for (var property in res.data) {
+            if (res.data.hasOwnProperty(property)) {
+              toastService.error(res.data[property]);
+            }
+          }
+        } else {
+          if (res.data.message) toastService.error(res.data.message);
+          else toastService.error(error.message);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="bg-slate-50 grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
@@ -11,36 +55,21 @@ const SignUp = () => {
           <h1 className="font-bold  text-6xl">Welcome to ConnectHub</h1>
           <p className="font-medium text-3xl">Be Imagine, Be Artistic, and let’s Engage</p>
         </div>
-        <form className="bg-white p-10 w-120 shadow-lg rounded-3xl max-sm:w-full">
+        <form onSubmit={signUp} className="bg-white p-10 w-120 shadow-lg rounded-3xl max-sm:w-full">
           <h1 className="font-medium text-4xl	">ConnectHub</h1>
           <p>Create a new account.</p>
-          <div className="flex gap-x-2.5 mt-6 mb-5">
-            <div>
-              <label htmlFor="firstName" className="block mb-2 text-sm font-medium text-gray-900">
-                First Name
-              </label>
+          <div className="mb-5 mt-6">
+            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900">
+              Username
+            </label>
 
-              <input
-                type="text"
-                id="firstName"
-                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none block w-full p-4 hover:ring-4 ease-linear duration-200"
-                placeholder="John"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block mb-2 text-sm font-medium text-gray-900">
-                Last Name
-              </label>
-
-              <input
-                type="text"
-                id="lastName"
-                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none block w-full p-4 hover:ring-4 ease-linear duration-200"
-                placeholder="Doe"
-                required
-              />
-            </div>
+            <input
+              type="text"
+              id="username"
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none block w-full p-4 hover:ring-4 ease-linear duration-200"
+              placeholder="tehgan"
+              required
+            />
           </div>
           <div className="mb-5">
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
@@ -68,20 +97,15 @@ const SignUp = () => {
             />
           </div>
 
+          <div className="pb-5"></div>
+
           <button
             type="submit"
-            className="text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
+            className="flex justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
           >
+            {isLoading && <Spinner />}
             Sign Up
           </button>
-          <div className="grid grid-cols-3 items-center ">
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-            <p className="justify-self-center">or</p>
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-          </div>
-          <div className="flex justify-center items-center">
-            <OAuthGoogleButton />
-          </div>
           <div className="flex py-2.5 mt-2.5 text-sm">
             <p>Already have an account?</p>
             <Link to="/login">
