@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react';
-import Comments from './Comments';
-import profilePlaceholder from './../../assets/icons/user.svg';
-import shareIcon from './../../assets/icons/send.svg';
+import Comments from 'components/shared/Comments';
+import profilePlaceholder from 'assets/icons/user.svg';
+import shareIcon from 'assets/icons/send.svg';
 import { Link } from 'react-router-dom';
-import ShareList from './ShareList';
-import { imageUrl } from './../../global';
-import Model from './Model';
+import ShareList from 'components/shared/ShareList';
+import { clientUrl, imageUrl } from 'global';
+import Model from 'components/shared/Model';
 import { postService, toastService } from 'service';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { HttpStatusCode } from 'axios';
+import useErrorBehavior from 'hooks/useErrorBehavior';
+import Menu, { MenuItem } from 'components/shared/Menu';
+import { copyTextToClipboard } from 'utility/copyToClipboard';
+import Linkify from './Linkify';
 
 const Post = (props) => {
   const { postId, totalComments, text, imageId, createDate, userId, username, profileImageId } = props;
-  const [totalLikes, setTotalLikes] = useState(props.totalLikes);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const defaultErrorBehavior = useErrorBehavior();
 
   const id = useSelector(selectUserInfo)?.userId;
   const options = {
@@ -45,42 +50,71 @@ const Post = (props) => {
   const [canSave, setCanSave] = useState(false);
   const [comment, setComment] = useState('');
 
-  const onLikeClick = () => {
+  const likePost = async () => {
+    try {
+      setLiked(true);
+      await postService.likePost(postId, id);
+      setTotalLikes(totalLikes + 1);
+    } catch (error) {
+      defaultErrorBehavior(error);
+      if (error.response.status === HttpStatusCode.Conflict) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    } finally {
+      setCanLike(true);
+    }
+  };
+
+  const unlikePost = async () => {
+    try {
+      setLiked(false);
+      await postService.unlikePost(postId, id);
+      setTotalLikes(totalLikes - 1);
+    } catch (error) {
+      setLiked(true);
+      defaultErrorBehavior(error);
+    } finally {
+      setCanLike(true);
+    }
+  };
+
+  const savePost = async () => {
+    try {
+      setSave(true);
+      await postService.savePost(postId, id);
+    } catch (error) {
+      if (error.response.status === HttpStatusCode.Conflict) {
+        setSave(true);
+      } else {
+        setSave(false);
+      }
+      defaultErrorBehavior(error);
+    } finally {
+      setCanSave(true);
+    }
+  };
+
+  const unsavePost = async () => {
+    try {
+      setSave(false);
+      await postService.unsavePost(postId, id);
+    } catch (error) {
+      setSave(true);
+      defaultErrorBehavior(error);
+    } finally {
+      setCanSave(true);
+    }
+  };
+
+  const onLikeClick = async () => {
     if (!canLike) return;
     setCanLike(false);
     if (!isLiked) {
-      setLiked(true);
-
-      postService
-        .likePost(postId, id)
-        .then(() => {
-          setLiked(true);
-          setTotalLikes(totalLikes + 1);
-        })
-        .catch((error) => {
-          if (error.response.status === HttpStatusCode.Conflict) {
-            setLiked(true);
-          } else {
-            setLiked(false);
-          }
-        })
-        .finally(() => {
-          setCanLike(true);
-        });
+      likePost();
     } else {
-      setLiked(false);
-      postService
-        .unlikePost(postId, id)
-        .then(() => {
-          setLiked(false);
-          setTotalLikes(totalLikes - 1);
-        })
-        .catch((error) => {
-          setLiked(true);
-        })
-        .finally(() => {
-          setCanLike(true);
-        });
+      unlikePost();
     }
   };
 
@@ -88,35 +122,9 @@ const Post = (props) => {
     if (!canSave) return;
     setCanSave(false);
     if (!isSave) {
-      setSave(true);
-      postService
-        .savePost(postId, id)
-        .then(() => {
-          setSave(true);
-        })
-        .catch((error) => {
-          if (error.response.status === HttpStatusCode.Conflict) {
-            setSave(true);
-          } else {
-            setSave(false);
-          }
-        })
-        .finally(() => {
-          setCanSave(true);
-        });
+      savePost();
     } else {
-      setSave(false);
-      postService
-        .unsavePost(postId, id)
-        .then(() => {
-          setSave(false);
-        })
-        .catch((error) => {
-          setSave(true);
-        })
-        .finally(() => {
-          setCanSave(true);
-        });
+      unsavePost();
     }
   };
 
@@ -128,57 +136,70 @@ const Post = (props) => {
     setShowSharelist(!showSharelist);
   };
 
-  const postNewComment = () => {
-    postService
-      .postComment(postId, comment, id)
-      .then((res) => {
-        toastService.success('New comment added');
-        setComment('');
-      })
-      .catch((error) => {
-        if (error.response.status >= 500) {
-          toastService.error("Internal server error. Couldn't add new comment");
-        } else {
-          toastService.error(error.response.data?.message);
-        }
-      });
+  const postNewComment = async () => {
+    try {
+      await postService.postComment(postId, comment, id);
+      toastService.success('New comment added');
+      setComment('');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
+  };
+
+  const fetchIsLikeAndSaved = async () => {
+    try {
+      const res = await postService.isLikedAndSaved(postId, id);
+      setLiked(res.data.liked);
+      setSave(res.data.saved);
+      setCanLike(true);
+      setCanSave(true);
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
 
   useEffect(() => {
     if (!postId || !id) return;
-    postService
-      .isLikedAndSaved(postId, id)
-      .then((res) => {
-        setLiked(res.data.liked);
-        setSave(res.data.saved);
-        setCanLike(true);
-        setCanSave(true);
-      })
-      .catch((error) => {
-        if (error.response.status >= 500) {
-          toastService.error("Internal server error. Couldn't fetch like and bookmark data");
-        } else {
-          toastService.error(error.response.data?.message);
-        }
-      });
+    fetchIsLikeAndSaved();
+    setTotalLikes(props.totalLikes);
   }, [postId, id]);
 
   return (
     <div className="grid grid-flow-row bg-white p-4 rounded-3xl w-full">
-      <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit ">
-        <img
-          src={profileImageId ? `${imageUrl}/${profileImageId}` : profilePlaceholder}
-          alt=""
-          className="w-circleImage h-circleImage rounded-full bg-gray-100 aspect-square object-cover cursor-pointer "
-        />
-        <div className="text-gray-900 focus:outline-none w-full text-sm mx-2 ">
-          <p className="font-medium cursor-pointer">{username ? username : 'username'}</p>{' '}
-          <p className="text-xs font-thin">uploaded on {date}</p>
-        </div>
-      </Link>
+      <div className="flex justify-between items-center w-full">
+        <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit">
+          <img
+            src={profileImageId ? `${imageUrl}/${profileImageId}` : profilePlaceholder}
+            alt=""
+            className="w-circleImage h-circleImage rounded-full bg-gray-100 aspect-square object-cover"
+          />
+          <div className="text-gray-900 focus:outline-none w-full text-sm mx-2 ">
+            <p className="font-medium">{username ? username : 'username'}</p>{' '}
+            <p className="text-xs font-thin">uploaded on {date}</p>
+          </div>
+        </Link>
+        <Menu cancelItem={true}>
+          <Link to={`/posts/${postId}`} target="_blank">
+            <MenuItem value="Go to post" icon="fa-solid fa-up-right-from-square" />
+          </Link>
+          <MenuItem
+            onClick={() => {
+              copyTextToClipboard(`${clientUrl}/posts/${postId}`);
+            }}
+            value="Copy link"
+            icon="fa-regular fa-copy"
+          />
+          <Link to={`/inbox/${userId}`} target="_blank">
+            <MenuItem value={`Message "${username}"`} icon="fa-regular fa-message" />
+          </Link>
+          <Link to={`/users/${userId}`} target="_blank">
+            <MenuItem value={`Visit ${username}'s profile`} icon="fa-regular fa-user" />
+          </Link>
+        </Menu>
+      </div>
 
       <div className={text ? 'my-2' : 'hidden'}>
-        <p>{text}</p>
+        <Linkify text={text !== null ? text : ''} />
       </div>
 
       <div
@@ -228,24 +249,24 @@ const Post = (props) => {
           </p>
         )}
       </div>
-      {showComments && (
-        <Model
-          onClose={() => {
-            setShowComments(false);
-          }}
-        >
-          <Comments postId={postId} onCloseClick={() => setShowComments(false)} />
-        </Model>
-      )}
-      {showSharelist && (
-        <Model
-          onClose={() => {
-            setShowSharelist(false);
-          }}
-        >
-          <ShareList postId={postId} userId={id} onCloseClick={() => setShowSharelist(false)} />
-        </Model>
-      )}
+
+      <Model
+        onClose={() => {
+          setShowComments(false);
+        }}
+        show={showComments}
+      >
+        <Comments postId={postId} onCloseClick={() => setShowComments(false)} />
+      </Model>
+
+      <Model
+        onClose={() => {
+          setShowSharelist(false);
+        }}
+        show={showSharelist}
+      >
+        <ShareList postId={postId} userId={id} onCloseClick={() => setShowSharelist(false)} />
+      </Model>
     </div>
   );
 };

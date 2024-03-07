@@ -1,5 +1,5 @@
 import { imageUrl } from 'global';
-import { user } from './../../../assets/icons';
+import { user } from 'assets/icons';
 import { Link } from 'react-router-dom/dist';
 
 const UserProfileRectangle = (props) => {

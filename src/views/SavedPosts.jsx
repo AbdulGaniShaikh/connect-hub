@@ -6,26 +6,32 @@ import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../redux/slices/userInfoSlice';
 import { userService } from 'service';
 import { Pagination } from '@mui/material';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const SavedPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
   const { userId } = useSelector(selectUserInfo);
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const fetchSavedPost = async () => {
+    setLoading(true);
+    try {
+      const res = await userService.getSavedPosts(userId, page.pageNumber - 1);
+      setPosts(res.data?.content);
+      var { totalPages } = res.data;
+      if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
-    userService
-      .getSavedPosts(userId, page.pageNumber - 1)
-      .then((res) => {
-        setPosts(res.data?.content);
-        var { totalPages } = res.data;
-        if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
-      })
-      .catch((error) => {})
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchSavedPost();
   }, [userId, page]);
 
   return (

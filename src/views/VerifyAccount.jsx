@@ -3,29 +3,33 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { authService, toastService } from 'service';
 import { check, close } from 'assets/icons';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const VerifyAccount = () => {
   const { email } = useParams();
   const token = useSearchParams()[0].get('token');
   const [loading, setLoading] = useState(true);
   const [statusCode, setStatusCode] = useState(0);
-  useEffect(() => {
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const fetchVerificationStatus = async () => {
     setLoading(true);
-    authService
-      .verifyEmail(email, token)
-      .then((res) => {
-        setStatusCode(200);
-      })
-      .catch((error) => {
-        const status = error.response?.status;
-        console.log(status);
-        if (status) {
-          setStatusCode(status);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      await authService.verifyEmail(email, token);
+      setStatusCode(200);
+    } catch (error) {
+      defaultErrorBehavior(error);
+      const status = error.response?.status;
+      if (status) {
+        setStatusCode(status);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVerificationStatus();
   }, [token, email]);
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -78,24 +82,14 @@ const NotFound = ({ email }) => {
 };
 
 const Unauthorized = ({ email }) => {
-  const resendVerificationLink = (email) => {
-    authService
-      .resendVerificationLink(email)
-      .then(() => {
-        toastService.success('Account verification mail was sent successfully');
-      })
-      .catch((error) => {
-        const res = error.response;
-        if (!res) {
-          toastService.error('Some error occured');
-          return;
-        }
-        if (res.status >= 500) {
-          toastService.error('Internal Server Error Occured');
-          return;
-        }
-        toastService.error(res.data?.message);
-      });
+  const defaultErrorBehavior = useErrorBehavior();
+  const resendVerificationLink = async (email) => {
+    try {
+      await authService.resendVerificationLink(email);
+      toastService.success('Account verification mail was sent successfully');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
   return (
     <div className="flex flex-col gap-y-3 items-center justify-center">

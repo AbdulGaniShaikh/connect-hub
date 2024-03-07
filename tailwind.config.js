@@ -8,7 +8,7 @@ module.exports = {
         primaryColorDark: '#d14169',
         backgroundLight: '#fffafa',
         hoverGray: '#ffffff66',
-        chatRecieverColor: '#408FEF'
+        chatRecieverColor: '#D9FDD3'
       },
       width: {
         120: '27rem',

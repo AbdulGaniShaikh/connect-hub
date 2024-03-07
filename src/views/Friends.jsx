@@ -1,4 +1,3 @@
-import { HttpStatusCode } from 'axios';
 import { useEffect, useState } from 'react';
 import message from 'assets/icons/send.svg';
 import remove from 'assets/icons/user-remove.svg';
@@ -11,6 +10,7 @@ import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { imageUrl } from 'global';
 import { user } from 'assets/icons';
 import { Pagination } from '@mui/material';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
@@ -19,6 +19,23 @@ const Friends = () => {
   const [loading, setLoading] = useState(true);
   const { userId } = useSelector(selectUserInfo);
   const [showMessageButtons, setShowButtons] = useState(false);
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const fetchFriends = async () => {
+    setLoading(true);
+    try {
+      const res = await friendService.getFriends(id, Math.max(0, page.pageNumber - 1));
+
+      setFriends(res.data.content);
+      var { totalPages } = res.data;
+      if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -26,22 +43,7 @@ const Friends = () => {
   useEffect(() => {
     if (!userId) return;
     if (userId === id) setShowButtons(true);
-    setLoading(true);
-    friendService
-      .getFriends(id, Math.max(0, page.pageNumber - 1))
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setFriends(res.data?.content);
-          var { totalPages } = res.data;
-          if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
-        }
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchFriends();
   }, [userId, id, page]);
 
   const onUnfriend = (id) => {
@@ -57,17 +59,18 @@ const Friends = () => {
             .fill(1)
             .map((_, i) => <UserCardSkeleton key={i} />)}
         {!loading && friends.length === 0 && <NoData message="You don't have any friends" />}
-        {friends.map((friend, id) => {
-          return (
-            <Friend
-              key={id}
-              {...friend}
-              visitorId={userId}
-              showMessageButtons={showMessageButtons}
-              onUnfriend={onUnfriend}
-            />
-          );
-        })}
+        {!loading &&
+          friends.map((friend, id) => {
+            return (
+              <Friend
+                key={id}
+                {...friend}
+                visitorId={userId}
+                showMessageButtons={showMessageButtons}
+                onUnfriend={onUnfriend}
+              />
+            );
+          })}
       </div>
       {!loading && friends.length !== 0 && (
         <div className="flex flex-col justify-center items-center pt-5">
@@ -91,20 +94,20 @@ const Friend = (props) => {
   const { profileImageId, username, email, userId, visitorId, showMessageButtons, onUnfriend } = props;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const defaultErrorBehavior = useErrorBehavior();
+
   const onUserClick = () => {
     navigate(`/users/${userId}`);
   };
-  const onUnfriendClick = () => {
-    friendService
-      .unfriend(visitorId, userId)
-      .then((res) => {
-        onUnfriend(userId);
-        toastService.success(`Unfriended ${username}`);
-        dispatch(decrementTotalFriendsCount());
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      });
+  const onUnfriendClick = async () => {
+    try {
+      await friendService.unfriend(visitorId, userId);
+      onUnfriend(userId);
+      toastService.success(`Unfriended ${username}`);
+      dispatch(decrementTotalFriendsCount());
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
   const messageUser = () => {
     navigate(`/inbox/${userId}`);

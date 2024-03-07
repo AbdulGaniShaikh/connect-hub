@@ -1,8 +1,8 @@
 import { useDispatch } from 'react-redux';
-import { addMessage } from './../redux/slices/messageSlice';
+import { addMessage, increaseCount, newMessage } from '../redux/slices/messageSlice';
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
-import sound from './../assets/sound/notification.wav';
+// import sound from 'assets/sound/notification.wav';
 
 var stompClient = null;
 var senderId = null;
@@ -10,15 +10,15 @@ var senderId = null;
 const useSocket = (userId) => {
   const dispatch = useDispatch();
 
-  var audio = document.createElement('AUDIO');
-  document.body.appendChild(audio);
-  audio.src = sound;
-
   const onMessageRecieved = (payload) => {
+    var path = window.location.pathname;
     const body = JSON.parse(payload.body);
     dispatch(addMessage(body));
-    document.getElementById('notification-audio');
-    if (!window.location.pathname.startsWith('/inbox')) audio.play();
+
+    if (path !== `/inbox/${body.senderId}` && body.senderId !== senderId) {
+      dispatch(increaseCount(body.senderId));
+      dispatch(newMessage({ body, userId: senderId }));
+    }
   };
 
   const connect = (userId) => {
@@ -28,12 +28,11 @@ const useSocket = (userId) => {
     stompClient.connect({}, onConnected, onError);
   };
 
-  const onError = (err) => {
-    console.log(err);
+  const onError = (error) => {
+    console.log(error);
   };
 
   const onConnected = () => {
-    console.log('subscribed');
     stompClient.subscribe('/user/' + senderId + '/private', onMessageRecieved);
   };
 
@@ -51,12 +50,13 @@ const useSocket = (userId) => {
     };
 
     stompClient.send('/app/private-message', {}, JSON.stringify(chatMessage));
-    dispatch(addMessage(chatMessage));
   };
 
   const disconnect = () => {
-    console.log('disconnecting');
-    if (stompClient.connected) stompClient.disconnect(() => {});
+    if (stompClient && stompClient.connected)
+      stompClient.disconnect(() => {
+        console.log('disconnecting');
+      });
   };
 
   return [publishMessage, connect, disconnect];

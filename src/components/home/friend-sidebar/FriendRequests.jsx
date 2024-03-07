@@ -1,12 +1,12 @@
-import SingleFriendRequest from './SingleFriendRequest';
+import SingleFriendRequest from 'components/home/friend-sidebar/SingleFriendRequest';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeRequest, selectRequests, setRequests } from './../../../redux/slices/friendRequestsSlice';
-import UserCardSkeleton from './../../skeletons/UserCardSkeleton';
-import { useEffect, useState } from 'react';
-import { friendService, toastService } from 'service';
+import { selectRequests, setRequests } from './../../../redux/slices/friendRequestsSlice';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
-import { HttpStatusCode } from 'axios';
+import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
+import { useEffect, useState } from 'react';
+import { friendService } from 'service';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const FriendRequests = () => {
   const friendReqs = useSelector(selectRequests);
@@ -14,21 +14,23 @@ const FriendRequests = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { userId } = useSelector(selectUserInfo);
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    try {
+      const res = await friendService.getFriendRequests(userId, 0, 3);
+      dispatch(setRequests(res.data?.content));
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
-    friendService
-      .getFriendRequests(userId, 0, 3)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          dispatch(setRequests(res.data?.content));
-        }
-      })
-      .catch((error) => {
-        toastService.error(error?.message);
-      })
-      .finally(() => setLoading(false));
+    fetchRequests();
   }, [userId]);
 
   const onViewAllFRClick = () => {

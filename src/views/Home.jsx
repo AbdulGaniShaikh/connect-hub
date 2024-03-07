@@ -1,5 +1,5 @@
-import Sidebar from '../components/home/sidebar/Sidebar';
-import Navbar from '../components/home/navbar/Navbar';
+import Sidebar from 'components/home/sidebar/Sidebar';
+import Navbar from 'components/home/navbar/Navbar';
 import FriendSidebar from 'components/home/friend-sidebar/FriendSidebar';
 import { Outlet } from 'react-router-dom';
 import BottomNavigation from 'components/shared/BottomNavigation';

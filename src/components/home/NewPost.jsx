@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { incrementTotalPostsCount, selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import close from './../../assets/icons/close.svg';
-import gallery from './../../assets/icons/image.svg';
-import { imageUrl } from './../../global';
-import profileDefault from './../../assets/icons/user.svg';
-import { postService, toastService } from './../../service';
+import close from 'assets/icons/close.svg';
+import gallery from 'assets/icons/image.svg';
+import { imageUrl } from 'global';
+import profileDefault from 'assets/icons/user.svg';
+import { postService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
 import Spinner from 'components/shared/Spinner';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const NewPost = () => {
   const user = useSelector(selectUserInfo);
@@ -19,29 +20,27 @@ const NewPost = () => {
   const uploadedImageRef = useRef(null);
   const [val, setVal] = useState('');
   const [loading, setLoading] = useState(false);
-  const uploadNewPost = () => {
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const uploadNewPost = async () => {
     if (!image && val.trim() === '') {
       toastService.error('image and text cannot be empty');
       return;
     }
     setLoading(true);
-    postService
-      .uploadNewPost(user.userId, image, val)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          toastService.success('post uploaded successfully');
-          setVal('');
-          removeImage();
-          dispatch(incrementTotalPostsCount());
-        }
-      })
-      .catch((error) => {
-        const res = error.response;
-        toastService.error(res.data.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await postService.uploadNewPost(user.userId, image, val);
+      if (res.status === HttpStatusCode.Ok) {
+        toastService.success('Post uploaded successfully');
+        setVal('');
+        removeImage();
+        dispatch(incrementTotalPostsCount());
+      }
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onChange = (e) => {
@@ -50,14 +49,12 @@ const NewPost = () => {
 
   const removeImage = () => {
     uploadedImageRef.current.classList.add('hidden');
-    console.log(fileInputRef.current.value);
     fileInputRef.current.value = null;
     setImage(null);
     setImageToDisplay(null);
   };
 
   const handleFileChange = (e) => {
-    console.log('readfile');
     if (e.target.files[0]) {
       setImageToDisplay(URL.createObjectURL(e.target.files[0]));
       setImage(e.target.files[0]);

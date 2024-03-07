@@ -1,21 +1,35 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom/dist';
+import { Link } from 'react-router-dom/dist';
 import { useDispatch } from 'react-redux';
-import profileDefault from './../../../assets/icons/user.svg';
+import profileDefault from 'assets/icons/user.svg';
 import { updateCoverImageId, updateProfileImageId } from './../../../redux/slices/userInfoSlice';
-import { authService, friendService, toastService, userService } from './../../../service';
+import { friendService, toastService, userService } from 'service';
 import { HttpStatusCode } from 'axios';
-import { imageUrl } from './../../../global';
+import { imageUrl } from 'global';
 import Spinner from 'components/shared/Spinner';
+import { verified } from 'assets/icons';
+import useLogout from 'hooks/useLogout';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const ProfileSection = (props) => {
-  const { user, relation, visitorId } = props;
+  const coverImgRef = useRef(null);
+  const profileImageRef = useRef(null);
+  const { user, relation, visitorId, friendRequestId } = props;
   const [isVisitingProfile, setIdVisiting] = useState(props.isVisitingProfile);
   const dispatch = useDispatch();
   const [relation1, setRelation] = useState('NONE');
+  const defaultErrorBehavior = useErrorBehavior();
 
   const coverInpRef = useRef(null);
   const pfpInpRef = useRef(null);
+
+  const saveCursorPosition = function (cursorX, cursorY, ref) {
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    let xPos = ((cursorX - left) / width) * 100;
+    let yPos = ((cursorY - top) / height) * 100;
+    document.documentElement.style.setProperty('--x', xPos + '%');
+    document.documentElement.style.setProperty('--y', yPos + '%');
+  };
 
   useEffect(() => {
     if (!user.userId) return;
@@ -24,41 +38,36 @@ const ProfileSection = (props) => {
       setRelation('SELF');
       setIdVisiting(false);
     }
-    console.log(`og ${user.userId} & visitor Id ${visitorId}`);
     setRelation(relation);
   }, [relation, user, visitorId]);
 
-  const onCoverInputChange = (event) => {
+  const onCoverInputChange = async (event) => {
     const image = event.target.files[0];
     if (image) {
-      userService
-        .updateCover(user.userId, image)
-        .then((res) => {
-          if (res.status === HttpStatusCode.Ok) {
-            dispatch(updateCoverImageId(res.data.payload));
-            toastService.success('cover image sucessfully updated');
-          }
-        })
-        .catch((error) => {
-          toastService.error(error.response.data.message);
-        });
+      try {
+        const res = await userService.updateCover(user.userId, image);
+        if (res.status === HttpStatusCode.Ok) {
+          dispatch(updateCoverImageId(res.data.payload));
+          toastService.success('cover image successfully updated');
+        }
+      } catch (error) {
+        defaultErrorBehavior(error);
+      }
     }
   };
 
-  const onPfpInputChange = (event) => {
+  const onPfpInputChange = async (event) => {
     const image = event.target.files[0];
     if (image) {
-      userService
-        .updateProfile(user.userId, image)
-        .then((res) => {
-          if (res.status === HttpStatusCode.Ok) {
-            dispatch(updateProfileImageId(res.data.payload));
-            toastService.success('profile sucessfully updated');
-          }
-        })
-        .catch((error) => {
-          toastService.error(error.response.data.message);
-        });
+      try {
+        const res = await userService.updateProfile(user.userId, image);
+        if (res.status === HttpStatusCode.Ok) {
+          dispatch(updateProfileImageId(res.data.payload));
+          toastService.success('profile successfully updated');
+        }
+      } catch (error) {
+        defaultErrorBehavior(error);
+      }
     }
   };
 
@@ -87,6 +96,7 @@ const ProfileSection = (props) => {
       {isVisitingProfile && <div></div>}
 
       <div
+        ref={coverImgRef}
         onClick={() => {
           if (!isVisitingProfile) coverInpRef.current.click();
         }}
@@ -99,7 +109,8 @@ const ProfileSection = (props) => {
             onError={() => {
               this.style.display = 'none';
             }}
-            className="w-full h-full object-cover"
+            onMouseMove={(e) => saveCursorPosition(e.clientX, e.clientY, coverImgRef)}
+            className="w-full h-full zoom-on-mouse object-cover hover:scale-150 duration-100 ease-linear"
           />
         )}
         {!isVisitingProfile && (
@@ -115,12 +126,14 @@ const ProfileSection = (props) => {
             onClick={() => {
               if (!isVisitingProfile) pfpInpRef.current.click();
             }}
+            ref={profileImageRef}
             className="cover-photo relative inline-block bg-gray-100 h-32 w-32 rounded-full overflow-hidden cursor-pointer "
           >
             <img
               src={user.profileImageId ? `${imageUrl}/${user.profileImageId}` : profileDefault}
               alt=""
-              className="w-full h-full object-cover"
+              onMouseMove={(e) => saveCursorPosition(e.clientX, e.clientY, profileImageRef)}
+              className="w-full h-full zoom-on-mouse object-cover hover:scale-150 duration-100 ease-linear"
             />
             {!isVisitingProfile && (
               <div className="show-when-hover backdrop-blur-sm top-0 absolute h-full w-full bg-hoverGray hidden"></div>
@@ -132,7 +145,12 @@ const ProfileSection = (props) => {
         </div>
 
         <div className="ml-36">
-          <p className="text-xl font-medium">{user.username}</p>
+          <p className="text-xl tooltip-container font-medium tooltip inline-block relative">
+            {user.username} {user.verified && <img src={verified} alt="" className="size-5 aspect-square inline" />}
+            <span className="text-gray-50 tooltip invisible px-2 py-1 rounded-md absolute bottom-full left-1/2 text-xs bg-black select-none">
+              {user.verified ? 'Verified' : 'Unverified'}
+            </span>
+          </p>
           <p className="">{user.email}</p>
         </div>
         <div className="flex flex-col justify-center items-start">
@@ -148,16 +166,36 @@ const ProfileSection = (props) => {
       {isVisitingProfile && (
         <>
           {relation1 === 'NONE' && (
-            <RelationNone setRelation={setRelation} visitorId={visitorId} userId={user.userId} />
+            <RelationNone
+              setRelation={setRelation}
+              friendRequestId={friendRequestId}
+              visitorId={visitorId}
+              userId={user.userId}
+            />
           )}
           {relation1 === 'FRIENDS' && (
-            <RelationFriend setRelation={setRelation} visitorId={visitorId} userId={user.userId} />
+            <RelationFriend
+              setRelation={setRelation}
+              friendRequestId={friendRequestId}
+              visitorId={visitorId}
+              userId={user.userId}
+            />
           )}
           {relation1 === 'FR_RECEIVED' && (
-            <RelationFRRecieved setRelation={setRelation} visitorId={visitorId} userId={user.userId} />
+            <RelationFRRecieved
+              setRelation={setRelation}
+              friendRequestId={friendRequestId}
+              visitorId={visitorId}
+              userId={user.userId}
+            />
           )}
           {relation1 === 'FR_SENT' && (
-            <RelationFRSent setRelation={setRelation} visitorId={visitorId} userId={user.userId} />
+            <RelationFRSent
+              setRelation={setRelation}
+              friendRequestId={friendRequestId}
+              visitorId={visitorId}
+              userId={user.userId}
+            />
           )}
         </>
       )}
@@ -169,22 +207,20 @@ const ProfileSection = (props) => {
 const RelationNone = (props) => {
   const { setRelation, userId, visitorId } = props;
   const [loading, setLoading] = useState(false);
-  const addFriend = () => {
+  const defaultErrorBehavior = useErrorBehavior();
+  const addFriend = async () => {
     setLoading(true);
-    friendService
-      .sendFriendRequest(visitorId, userId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation('FR_SENT');
-        }
-        toastService.success('Friend Request was sent successfully');
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await friendService.sendFriendRequest(visitorId, userId);
+      if (res.status === HttpStatusCode.Ok) {
+        setRelation('FR_SENT');
+      }
+      toastService.success('Friend Request was sent successfully');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -202,24 +238,21 @@ const RelationNone = (props) => {
 };
 
 const RelationFRSent = (props) => {
-  const { setRelation, userId, visitorId } = props;
+  const { setRelation, friendRequestId } = props;
   const [loading, setLoading] = useState(false);
-  const unsendRequest = () => {
+  const defaultErrorBehavior = useErrorBehavior();
+  const unsendRequest = async () => {
     setLoading(true);
-    friendService
-      .deleteFriendRequest(visitorId, userId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation('NONE');
-        }
-        toastService.success('Deleted friend request');
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      await friendService.deleteFriendRequest(friendRequestId);
+
+      setRelation('NONE');
+      toastService.success('Deleted friend request');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -236,43 +269,34 @@ const RelationFRSent = (props) => {
 };
 
 const RelationFRRecieved = (props) => {
-  const { setRelation, userId, visitorId } = props;
+  const { setRelation, friendRequestId } = props;
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
+  const defaultErrorBehavior = useErrorBehavior();
 
-  const acceptClick = () => {
+  const acceptClick = async () => {
     setAcceptLoading(true);
-    friendService
-      .acceptFriendRequest(userId, visitorId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation('FRIENDS');
-        }
-        toastService.success('accepted friend request');
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setAcceptLoading(false);
-      });
+    try {
+      await friendService.acceptFriendRequest(friendRequestId);
+      setRelation('FRIENDS');
+      toastService.success('Accepted friend request');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setAcceptLoading(false);
+    }
   };
-  const rejectClick = () => {
+  const rejectClick = async () => {
     setRejectLoading(true);
-    friendService
-      .rejectFriendRequest(userId, visitorId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation('NONE');
-        }
-        toastService.success('Rejected friend request');
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setRejectLoading(false);
-      });
+    try {
+      await friendService.rejectFriendRequest(friendRequestId);
+      setRelation('NONE');
+      toastService.success('Rejected friend request');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setRejectLoading(false);
+    }
   };
 
   return (
@@ -298,23 +322,19 @@ const RelationFRRecieved = (props) => {
 const RelationFriend = (props) => {
   const { setRelation, userId, visitorId } = props;
   const [loading, setLoading] = useState(false);
+  const defaultErrorBehavior = useErrorBehavior();
 
-  const unfriend = () => {
+  const unfriend = async () => {
     setLoading(true);
-    friendService
-      .unfriend(visitorId, userId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation('NONE');
-        }
-        toastService.success('Unfriended');
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      await friendService.unfriend(visitorId, userId);
+      setRelation('NONE');
+      toastService.success('Unfriended');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -333,8 +353,8 @@ const RelationFriend = (props) => {
   );
 };
 
-const RelationSelf = (props) => {
-  const navigate = useNavigate();
+const RelationSelf = () => {
+  const [logout] = useLogout();
 
   return (
     <div className="flex gap-x-3 w-1/2 self-end mt-3">
@@ -343,16 +363,7 @@ const RelationSelf = (props) => {
       </button>
 
       <button
-        onClick={() => {
-          authService
-            .logout()
-            .then(() => {
-              navigate('/login');
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }}
+        onClick={logout}
         className="text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
       >
         Logout

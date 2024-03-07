@@ -1,43 +1,42 @@
 import NoData from 'components/shared/NoData';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectUserInfo } from './../redux/slices/userInfoSlice';
-import { friendService, toastService } from 'service';
-import { HttpStatusCode } from 'axios';
+import { selectInbox, setInbox, updateInbox } from './../redux/slices/messageSlice';
 import { imageUrl } from 'global';
 import { user } from 'assets/icons';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { Link } from 'react-router-dom';
+import useErrorBehavior from 'hooks/useErrorBehavior';
+import chatService from 'service/chatService';
+import { userService } from 'service';
 
-const Inbox = (props) => {
-  const [friends, setFriends] = useState([]);
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(true);
-
+const Inbox = () => {
   const { userId } = useSelector(selectUserInfo);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const inbox = useSelector(selectInbox);
+  const dispatch = useDispatch();
+  const defaultErrorBehavior = useErrorBehavior();
 
   useEffect(() => {
     setPage(0);
   }, []);
 
-  const fetchInbox = () => {
+  const fetchInbox = async () => {
     setLoading(true);
-    friendService
-      .getFriends(userId, page)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          if (res.data?.content.length > 0) {
-            setFriends([...res.data.content, ...friends]);
-            setPage(page + 1);
-          }
-        }
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await chatService.fetchInbox(userId, page);
+      if (!res.data.empty) {
+        dispatch(setInbox([...res.data.content]));
+        setPage(page + 1);
+      }
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -53,10 +52,11 @@ const Inbox = (props) => {
           Array(5)
             .fill(1)
             .map((_, i) => <UserCardSkeleton key={i} />)}
-        {!loading && friends.length === 0 && <NoData message="You don't have any friends" />}
-        {friends.map((data) => {
-          return <InboxItem {...data} />;
-        })}
+        {!loading && inbox.length === 0 && <NoData message="You don't have any inbox" />}
+        {!loading &&
+          inbox.map((data, i) => {
+            return <InboxItem key={i} {...data} />;
+          })}
         <div
           onClick={() => {
             fetchInbox();
@@ -71,53 +71,59 @@ const Inbox = (props) => {
 };
 
 const InboxItem = (props) => {
-  const { profileImageId, username, email, userId, lastSeen } = props;
+  const { profileImageId, username, email, userId, lastSeen, lastMessage, post, unreadMessageCount, senderId } = props;
   const [isActive, setIsActive] = useState(false);
-  const [lastSeenText, setLastSeenText] = useState('');
+  const dispatch = useDispatch();
+
+  var subtitle = post ? 'Sent a post' : lastMessage;
+  subtitle = userId === senderId ? subtitle : 'You: ' + subtitle;
+
+  if (!username) {
+    userService
+      .getUser(userId)
+      .then((res) => {
+        const user = res.data.payload;
+        dispatch(updateInbox(user));
+      })
+      .catch(() => {});
+  }
 
   useEffect(() => {
     var last = new Date(lastSeen);
     var currentDate = new Date();
-    if ((currentDate.getTime() - last.getTime()) / (1000 * 60) <= 5) {
+    if ((currentDate.getTime() - last.getTime()) / (1000 * 60) <= 1) {
       setIsActive(true);
       return;
-    }
-    const options = {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    try {
-      setLastSeenText(new Intl.DateTimeFormat('en-US', options).format(new Date(lastSeen)));
-    } catch (err) {
-      console.log(err);
-      setLastSeenText(email);
     }
   }, [lastSeen]);
 
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <Link to={`/inbox/${userId}`} className="flex overflow-hidden items-center">
-        <img
-          src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-          alt={userId}
-          className="rounded-full aspect-square object-cover h-circleImage w-circleImage"
-        />
-        <div className="text-gray-900 grow text-sm px-2.5 overflow-hidden">
-          <p className="font-medium overflow-ellipsis overflow-hidden ">{username}</p>
-          {/* <div className="text-xs overflow-ellipsis overflow-hidden">{lastSeenText}</div> */}
-          <div className="text-xs overflow-ellipsis overflow-hidden">
-            {isActive && (
-              <div className="flex justify-start gap-x-1 items-center">
-                <p className="rounded-full bg-green-500 p-1 h-2 w-2"></p>
-                <span>Active now</span>
-              </div>
-            )}
-            {!isActive && <p>Last seen {lastSeenText}</p>}
+        <div
+          className={`${
+            isActive && 'outline outline-2 outline-offset-2 outline-green-500'
+          } m-1 relative rounded-full aspect-square object-cover h-circleImage w-circleImage`}
+        >
+          <img
+            src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
+            className="rounded-full aspect-square object-cover"
+            alt={userId}
+          />
+          {isActive && <p className="absolute h-3 w-3 rounded-full bg-green-500 -right-px -bottom-px"></p>}
+        </div>
+
+        <div className="text-gray-900 w-full text-sm px-2.5 ">
+          <p className="font-medium">{username}</p>
+          <div className={`text-xs ${unreadMessageCount > 0 && 'font-bold'}`}>
+            <p className="">{subtitle.length > 40 ? subtitle.substring(0, 40) + '...' : subtitle}</p>
           </div>
         </div>
-        {/* {isActive && <p className="rounded-full bg-green-500 p-1 h-2 w-2"></p>} */}
+        {unreadMessageCount > 0 && (
+          <p className="text-center text-white p-px size-5 rounded-full bg-primaryColor text-xs">
+            {unreadMessageCount}
+          </p>
+        )}
       </Link>
     </div>
   );

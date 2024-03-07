@@ -1,36 +1,41 @@
 import { useEffect, useState } from 'react';
-import UserProfileRectangle from './UserProfileRectangle';
+import UserProfileRectangle from 'components/home/friend-sidebar/UserProfileRectangle';
 import { useNavigate } from 'react-router-dom';
-import { friendService, toastService } from 'service';
+import { friendService } from 'service';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { HttpStatusCode } from 'axios';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const YourFriendsContainer = () => {
   const [friendsList, setFriendList] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userId } = useSelector(selectUserInfo);
+  const defaultErrorBehavior = useErrorBehavior();
 
   const navigate = useNavigate();
   const onViewAllFriendsClick = () => {
     navigate(`/users/${userId}/friends`);
   };
 
+  const fetchFriends = async () => {
+    try {
+      setLoading(true);
+      const res = await friendService.getFriends(userId, 0, 3);
+      if (res.status === HttpStatusCode.Ok) {
+        setFriendList(res.data.content);
+      }
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
-    friendService
-      .getFriends(userId, 0, 3)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setFriendList(res.data.content);
-        }
-      })
-      .catch((error) => {
-        toastService.error(error?.message);
-      })
-      .finally(() => setLoading(false));
+    fetchFriends();
   }, [userId]);
 
   return (

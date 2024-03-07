@@ -1,52 +1,56 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom/dist';
+import { useParams } from 'react-router-dom/dist';
 import ProfileSection from 'components/home/profile/ProfileSection';
 import DescriptionSection from 'components/home/profile/DescriptionSection';
-import { userService, toastService } from './../service';
-import { HttpStatusCode } from 'axios';
+import { userService } from 'service';
 import UserPosts from 'components/shared/UserPosts';
 import ProfileSkeleton from 'components/skeletons/ProfileSkeleton';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../redux/slices/userInfoSlice';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const User = () => {
   const { id } = useParams();
   const [user, setUser] = useState({});
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [relation, setRelation] = useState('NONE');
+  const [friendRequestId, setFriendRequestId] = useState('');
   const { userId } = useSelector(selectUserInfo);
+  const defaultErrorBehavior = useErrorBehavior();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  useEffect(() => {
-    userService
-      .getUser(id)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setUser(res.data.payload);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        navigate('/profile');
-        toastService.error(error.response.data.message);
-      });
-    userService
-      .getMyRelation(userId, id)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setRelation(res.data.payload);
-        }
-      })
 
-      .catch(() => {});
-  }, [id]);
+  const fetch = async () => {
+    try {
+      var res = await userService.getUser(id);
+      setUser(res.data.payload);
+      setLoading(false);
+
+      var res2 = await userService.getMyRelation(userId, id);
+      setRelation(res2.data.payload.relation);
+      setFriendRequestId(res2.data.payload.friendRequestId);
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
+  };
+  useEffect(() => {
+    if (!id) return;
+    if (!userId) return;
+    fetch();
+  }, [id, userId]);
 
   return (
     <div className="px-5 w-full pb-5 grid grid-flow-row gap-y-5">
       {loading && <ProfileSkeleton />}
-      <ProfileSection isVisitingProfile={true} user={user} relation={relation} visitorId={userId} />
+      <ProfileSection
+        isVisitingProfile={true}
+        user={user}
+        friendRequestId={friendRequestId}
+        relation={relation}
+        visitorId={userId}
+      />
       <DescriptionSection isVisitingProfile={true} user={user} />
       <UserPosts user={user} />
     </div>

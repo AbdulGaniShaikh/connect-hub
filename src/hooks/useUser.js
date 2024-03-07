@@ -1,46 +1,57 @@
-import { HttpStatusCode } from 'axios';
-import { authService, storageService, toastService, userService } from './../service';
+import { storageService, userService } from 'service';
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './../redux/slices/userInfoSlice';
+import { setInbox } from './../redux/slices/messageSlice';
 import { useNavigate } from 'react-router-dom';
-// import chatService from 'service/chatService';
-import useSocket from './useSocket';
+import useSocket from 'hooks/useSocket';
 import { useEffect } from 'react';
+import useLogout from 'hooks/useLogout';
+import chatService from 'service/chatService';
+import useErrorBehavior from './useErrorBehavior';
 
 const useUser = () => {
   var userId = storageService.getUserId();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [publishMessage, connect, disconnect] = useSocket();
+  const [logout] = useLogout();
+  const [, connect, disconnect] = useSocket();
+  const defaultErrorBehavior = useErrorBehavior();
+
+  const getUserInfo = async () => {
+    try {
+      const res = await userService.getUser(userId);
+      dispatch(setUserInfo(res.data.payload));
+      if (!res.data.payload.verified) {
+        navigate('/unverified-account');
+      }
+      connect(userId);
+    } catch (error) {
+      logout();
+      return;
+    }
+  };
+
+  const fetchInbox = async () => {
+    try {
+      const res = await chatService.fetchInbox(userId, 0);
+      if (!res.data.empty) {
+        dispatch(setInbox([...res.data.content]));
+      }
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
+  };
 
   useEffect(() => {
     if (!userId) {
-      authService
-        .logout()
-        .then(() => {
-          navigate('/login');
-          toastService.error('There was some error. Please login again.');
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      logout();
+      return;
     }
-    userService
-      .getUser(userId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          dispatch(setUserInfo(res.data.payload));
-          connect(userId);
-          if (!res.data.payload.verified) {
-            navigate('/unverified-account');
-          }
-        }
-      })
-      .catch((error) => {
-        toastService.error(error?.response?.message);
-      });
-    if (userId) return disconnect;
-  });
+    getUserInfo();
+    // fetchInbox();
+
+    return disconnect;
+  }, []);
 };
 
 export default useUser;

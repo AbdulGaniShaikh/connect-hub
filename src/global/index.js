@@ -1,4 +1,5 @@
 const backendUrl = 'http://localhost:8081';
+const clientUrl = 'http://localhost:3000';
 const imageUrl = backendUrl + '/api/image';
 const authUrl = backendUrl + '/api/auth/';
 const userUrl = backendUrl + '/api/users';
@@ -28,5 +29,18 @@ const friendUrls = {
 };
 
 const chatUrl = `${backendUrl}/api/chat`;
+const inboxUrl = `${backendUrl}/api/inbox`;
 
-export { chatUrl, authUrl, authUrls, imageUrl, userUrl, friendUrl, postUrl, searchUrl, friendUrls };
+export {
+  clientUrl,
+  inboxUrl,
+  chatUrl,
+  authUrl,
+  authUrls,
+  imageUrl,
+  userUrl,
+  friendUrl,
+  postUrl,
+  searchUrl,
+  friendUrls
+};

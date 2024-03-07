@@ -1,27 +1,27 @@
 import { Link } from 'react-router-dom';
-import { check, user } from './../../../assets/icons';
+import { check, user } from 'assets/icons';
 import { imageUrl } from 'global';
 import { friendService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';
 import { removeRequest } from './../../../redux/slices/friendRequestsSlice';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const SingleFriendRequest = (props) => {
-  var { username, email, userId, friendRequestId, profileImageId, loggedInId } = props;
+  var { username, email, userId, friendRequestId, profileImageId } = props;
   const dispatch = useDispatch();
+  const defaultErrorBehavior = useErrorBehavior();
 
-  const acceptRequest = () => {
-    friendService
-      .acceptFriendRequest(userId, loggedInId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          toastService.success('accepted friend request');
-          dispatch(removeRequest(friendRequestId));
-        }
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      });
+  const acceptRequest = async () => {
+    try {
+      const res = await friendService.acceptFriendRequest(friendRequestId);
+      if (res.status === HttpStatusCode.Ok) {
+        toastService.success('accepted friend request');
+        dispatch(removeRequest(friendRequestId));
+      }
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
   return (
     <div className="flex w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">

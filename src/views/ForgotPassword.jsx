@@ -1,79 +1,82 @@
-import { HttpStatusCode } from 'axios';
-import Spinner from 'components/shared/Spinner';
+import Waves from 'assets/side-wave.svg';
+import StrongPasswordInput from 'components/shared/StrongPasswordInput';
+import SubmitButton from 'components/shared/SubmitButton';
+import TextInput from 'components/shared/TextInput';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 import useIsLoggedIn from 'hooks/useIsLoggedIn';
 import { MuiOtpInput } from 'mui-one-time-password-input';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService, toastService } from 'service';
+import { isValidEmail, isValidPassword } from 'utility/inputValidators';
 
 const ForgotPassword = () => {
-  const [loadingContinue, setLoadingContinue] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = React.useState('');
+  const [password, setPassword] = useState('');
+
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const [otp, setOtp] = useState('');
+
   const navigate = useNavigate();
+  const defaultErrorBehavior = useErrorBehavior();
+
   useIsLoggedIn();
 
-  const onContinueClick = (event) => {
-    event.preventDefault();
-    setLoadingContinue(true);
+  const onClick = (setLoadingContinue) => {
     if (otpSent) {
-      resetPassword(event.target.email.value, event.target.password.value, otp);
+      resetPassword(email, password, otp, setLoadingContinue);
     } else {
-      sendOtpToResetPassword(event.target.email.value);
+      sendOtpToResetPassword(email);
     }
   };
 
-  const resetPassword = (email, password, otp) => {
-    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (!email.match(validRegex)) {
-      toastService.error('Enter valid email address');
-      return;
+  const resetPassword = async (email, password, otp, setLoadingContinue) => {
+    var v1, v2;
+    if ((v1 = !isValidEmail(email))) {
+      setEmailError('email is not valid');
+    }
+    if ((v2 = !isValidPassword(password))) {
+      setPasswordError('password cannot be empty');
     }
     if (otp.length !== 6) {
       toastService.error('OTP length can only be 6.');
       return;
     }
-    otp = 0 + +otp;
-    authService
-      .resetPassword(email, password, otp)
-      .then((res) => {
-        toastService.success('Password was reset. Login with your new password to access your account.');
-        navigate('/login');
-      })
-      .catch((error) => {
-        const res = error.response;
-        if (res) {
-          toastService.error(res.data?.message);
-        }
-      })
-      .finally(() => {
-        setLoadingContinue(false);
-      });
-  };
-
-  const sendOtpToResetPassword = (email) => {
-    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (!email.match(validRegex)) {
-      toastService.error('Enter valid email address');
+    if (v1 || v2) {
       return;
     }
-    authService
-      .sendOtpToResetPassword(email)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setOtpSent(true);
-        }
-      })
-      .catch((error) => {
-        const res = error.response;
-        if (res) {
-          toastService.error(res.data?.message);
-        }
-      })
-      .finally(() => {
-        setLoadingContinue(false);
-      });
+
+    otp = 0 + +otp;
+    try {
+      setLoadingContinue(true);
+      await authService.resetPassword(email, password, otp);
+      toastService.success('Password was reset. Login with your new password to access your account.');
+      navigate('/login');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoadingContinue(false);
+    }
+  };
+
+  const sendOtpToResetPassword = async (email, setLoadingContinue) => {
+    if (!isValidEmail(email)) {
+      setEmailError('email is not valid');
+      return;
+    }
+
+    try {
+      setLoadingContinue(true);
+      await authService.sendOtpToResetPassword(email);
+      setOtpSent(true);
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoadingContinue(false);
+    }
   };
 
   function matchIsNumeric(text) {
@@ -83,88 +86,82 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="flex justify-center px-5 h-screen items-center">
-      <form
-        onSubmit={onContinueClick}
-        className="flex flex-col gap-y-6 justify-evenly bg-white p-10 shadow-lg rounded-3xl w-120 max-sm:w-full"
-      >
-        <div>
-          <h1 className="font-medium text-4xl	">Forgot Password</h1>
-          <p className="text-sm pt-1">
-            Enter the email associated with your account and we'll send you OTP to reset your password.
-          </p>
-        </div>
+    <div className="grid grid-cols-1">
+      <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
+      <div className="z-10 min-h-screen flex justify-center items-center mx-10 max-md:my-10">
+        <div className="grid grid-flow-row grid-cols-2 max-md:grid-cols-1 bg-white p-10 shadow-lg rounded-3xl gap-3 max-sm:w-full">
+          <div className="col-span-2 max-md:col-span-1">
+            <h1 className="font-medium text-4xl	">Forgot Password</h1>
+            <p>Enter the email associated with your account and we'll send you OTP to reset your password.</p>
+          </div>
 
-        <div>
-          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-            Email
-          </label>
-          <input
-            type="email"
+          <TextInput
             id="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.currentTarget.value);
+            hint="name@example.com"
+            label="Email"
+            val={email}
+            error={emailError}
+            onChange={(e) => {
+              setEmail(e.trim());
+              if (isValidEmail(e.trim())) {
+                setEmailError('');
+              }
             }}
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none block w-full p-4 hover:ring-4 ease-linear duration-200"
-            placeholder="name@example.com"
-            required
+            key={1}
           />
-        </div>
-        {otpSent && (
-          <>
-            <div className="flex flex-col justify-center items-start">
-              <label className="block mb-2 text-sm font-medium text-gray-900">O T P</label>
-              <MuiOtpInput
-                TextFieldsProps={{ size: 'small', placeholder: '1' }}
-                length={6}
-                value={otp}
-                validateChar={matchIsNumeric}
-                onChange={(e) => setOtp(e)}
+          {otpSent && (
+            <>
+              <StrongPasswordInput
+                val={password}
+                label="New Password"
+                id="newPassword"
+                hint={'Type your new password'}
+                onChange={(val) => {
+                  setPassword(val);
+                  if (isValidPassword(val)) {
+                    setPasswordError('');
+                  }
+                }}
+                error={passwordError}
               />
+              <div className="flex flex-col justify-center items-start">
+                <label className="block mb-2 text-sm font-medium text-gray-900">O T P</label>
+                <MuiOtpInput
+                  TextFieldsProps={{ size: 'small', placeholder: '1' }}
+                  length={6}
+                  value={otp}
+                  validateChar={matchIsNumeric}
+                  onChange={(e) => setOtp(e)}
+                />
+              </div>
+            </>
+          )}
+
+          <div className={otpSent ? 'flex justify-center items-end' : 'flex justify-center items-center'}>
+            <SubmitButton text={otpSent ? 'Reset password' : 'Send OTP'} onClick={onClick} />
+          </div>
+          <div className="flex flex-row justify-between">
+            <p
+              className="text-primaryColor text-sm place-self-end cursor-pointer"
+              onClick={() => {
+                setOtpSent(!otpSent);
+              }}
+            >
+              {otpSent ? 'I dont have otp' : 'I already have OTP'}
+            </p>
+            {otpSent && (
               <p
-                className="mt-2.5 text-primaryColor text-sm place-self-end w-fit cursor-pointer"
+                className="text-primaryColor text-sm place-self-end cursor-pointer"
                 onClick={() => {
                   sendOtpToResetPassword(email);
                 }}
               >
                 Resend OTP
               </p>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
-                New password
-              </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="New password"
-                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none block w-full p-4 hover:ring-4 ease-linear duration-200"
-                required
-              />
-            </div>
-          </>
-        )}
-
-        <div className="flex flex-col justify-center items-center">
-          <button
-            type="submit"
-            className="flex justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
-          >
-            {loadingContinue && <Spinner />}
-            {!otpSent ? 'Continue' : 'Reset Password'}
-          </button>
-          <p
-            className="mt-2.5 text-primaryColor text-sm place-self-end w-fit cursor-pointer"
-            onClick={() => {
-              setOtpSent(!otpSent);
-            }}
-          >
-            {otpSent ? 'I dont have otp' : 'I already have OTP'}
-          </p>
+            )}
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
