@@ -1,10 +1,7 @@
 import axios from 'axios';
-import { postUrl, userUrl } from './../global';
+import { postUrl, userUrl } from 'global';
 
 const uploadNewPost = (userId, image, text) => {
-  if (image) {
-    console.log(image);
-  }
   const formData = new FormData();
   formData.append('userId', userId);
   formData.append('text', text);

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import NewPost from '../NewPost';
+import NewPost from 'components/home/NewPost';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
-import ProfileSection from './ProfileSection';
-import DescriptionSection from './DescriptionSection';
+import ProfileSection from 'components/home/profile/ProfileSection';
+import DescriptionSection from 'components/home/profile/DescriptionSection';
 import { useSelector } from 'react-redux';
 import UserPosts from 'components/shared/UserPosts';
 import ProfileSkeleton from 'components/skeletons/ProfileSkeleton';

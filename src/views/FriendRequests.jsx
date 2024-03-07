@@ -16,6 +16,7 @@ import {
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { HttpStatusCode } from 'axios';
 import { Pagination } from '@mui/material';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const FriendRequests = () => {
   const [friendRequests, setFriendRequests] = useState([]);
@@ -23,30 +24,35 @@ const FriendRequests = () => {
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
   const dispatch = useDispatch();
   const { userId } = useSelector(selectUserInfo);
+  const defaultErrorBehavior = useErrorBehavior();
 
-  const onDecline = async (id, username) => {
+  const onDecline = async (friendRequestId, username) => {
     try {
-      var res = await friendService.rejectFriendRequest(id, userId);
+      var res = await friendService.rejectFriendRequest(friendRequestId);
       if (res.status === HttpStatusCode.Ok) {
         toastService.success(`Rejected ${username}'s friend request`);
-        dispatch(removeRequest(id));
+        dispatch(removeRequest(friendRequestId));
         dispatch(decrementTotalFriendsCount());
-        setFriendRequests(friendRequests.filter((request) => id !== request.userId));
+        setFriendRequests(friendRequests.filter((request) => friendRequestId !== request.friendRequestId));
         fetchFriendRequest();
       }
-    } catch (error) {}
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
-  const onAccept = async (id, username) => {
+  const onAccept = async (friendRequestId, username) => {
     try {
-      var res = await friendService.acceptFriendRequest(id, userId);
+      var res = await friendService.acceptFriendRequest(friendRequestId);
       if (res.status === HttpStatusCode.Ok) {
         toastService.success(`Accepted ${username}'s friend request`);
-        dispatch(removeRequest(id));
+        dispatch(removeRequest(friendRequestId));
         dispatch(incrementTotalFriendsCount());
-        setFriendRequests(friendRequests.filter((request) => id !== request.userId));
+        setFriendRequests(friendRequests.filter((request) => friendRequestId !== request.friendRequestId));
         fetchFriendRequest();
       }
-    } catch (error) {}
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
 
   useEffect(() => {
@@ -55,20 +61,17 @@ const FriendRequests = () => {
     fetchFriendRequest();
   }, [userId, page]);
 
-  const fetchFriendRequest = () => {
-    friendService
-      .getFriendRequests(userId, page.pageNumber - 1)
-      .then((res) => {
-        setFriendRequests(res.data?.content);
-        var { totalPages } = res.data;
-        if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
-      })
-      .catch((error) => {
-        toastService.error(error.response.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const fetchFriendRequest = async () => {
+    try {
+      const res = await friendService.getFriendRequests(userId, Math.max(0, page.pageNumber - 1));
+      setFriendRequests(res.data?.content);
+      var { totalPages } = res.data;
+      if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,9 +83,10 @@ const FriendRequests = () => {
             .fill(1)
             .map((_, i) => <UserCardSkeleton key={i} />)}
         {!loading && friendRequests.length === 0 && <NoData message="You don't have any friends requests" />}
-        {friendRequests.map((data) => {
-          return <FriendRequest key={data.userId} {...data} onDecline={onDecline} onAccept={onAccept} />;
-        })}
+        {!loading &&
+          friendRequests.map((data) => {
+            return <FriendRequest key={data.userId} {...data} onDecline={onDecline} onAccept={onAccept} />;
+          })}
       </div>
       {!loading && friendRequests.length !== 0 && (
         <div className="flex flex-col justify-center items-center pt-5">
@@ -103,17 +107,17 @@ const FriendRequests = () => {
 };
 
 const FriendRequest = (props) => {
-  const { profileImageId, username, email, userId, onDecline, onAccept } = props;
+  const { profileImageId, username, email, userId, onDecline, onAccept, friendRequestId } = props;
   const navigate = useNavigate();
 
   const onUserClick = () => {
     navigate(`/users/${userId}`);
   };
   const onDeclineClick = () => {
-    onDecline(userId, username);
+    onDecline(friendRequestId, username);
   };
   const onAcceptClick = () => {
-    onAccept(userId, username);
+    onAccept(friendRequestId, username);
   };
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">

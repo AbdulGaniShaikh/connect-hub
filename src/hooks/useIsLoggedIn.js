@@ -5,14 +5,16 @@ import authService from 'service/authService';
 export default function useIsLoggedIn() {
   const navigate = useNavigate();
 
+  const isUserLoggedIn = async () => {
+    try {
+      const res = await authService.isUserLoggedIn();
+      if (res.status === 200) {
+        navigate('/');
+      }
+    } catch (error) {}
+  };
+
   useEffect(() => {
-    authService
-      .isUserLoggedIn()
-      .then((res) => {
-        if (res.status === 200) {
-          navigate('/');
-        }
-      })
-      .catch((err) => console.log(err));
+    isUserLoggedIn();
   }, []);
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom/dist';
-import { home, search, user, userPlus } from './../../assets/icons';
+import { home, search, user, userPlus } from 'assets/icons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { imageUrl } from 'global';

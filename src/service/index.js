@@ -1,7 +1,7 @@
-import authService from './authService';
-import toastService from './toastService';
-import storageService from './storageService';
-import userService from './userService';
-import postService from './postService';
-import friendService from './friendService';
+import authService from 'service/authService';
+import toastService from 'service/toastService';
+import storageService from 'service/storageService';
+import userService from 'service/userService';
+import postService from 'service/postService';
+import friendService from 'service/friendService';
 export { authService, toastService, storageService, userService, postService, friendService };

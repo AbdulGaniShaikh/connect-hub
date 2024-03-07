@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Login from './views/auth/Login';
-import SignUp from './views/auth/SignUp';
-import Home from './views/Home';
+import Login from 'views/auth/Login';
+import SignUp from 'views/auth/SignUp';
+import Home from 'views/Home';
 import MainContent from 'components/home/MainContent';
 import Profile from 'components/home/profile/Profile';
 import Friends from 'views/Friends';
@@ -18,6 +18,9 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import ForgotPassword from 'views/ForgotPassword';
 import VerifyAccount from 'views/VerifyAccount';
 import UnverifiedAccount from 'views/UnverifiedAccount';
+import ChangePassword from 'views/ChangePassword';
+import NotFound from 'views/NotFound';
+import PostWithComment from 'views/PostWithComment';
 
 const App = () => {
   return (
@@ -41,8 +44,11 @@ const App = () => {
               <Route path="/inbox/:id" element={<Chat />} />
               <Route path="/search" element={<Search />} />
               <Route path="/saved" element={<SavedPosts />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+              <Route path="/posts/:postId" element={<PostWithComment />} />
             </Route>
-            <Route path="*" element={<h1>Page Not available</h1>} />
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </SkeletonTheme>

@@ -1,8 +1,8 @@
-import home from '../../../assets/icons/home.svg';
-import search from '../../../assets/icons/search.svg';
-import message from '../../../assets/icons/send.svg';
-import group from '../../../assets/icons/users.svg';
-import saved from '../../../assets/icons/bookmark.svg';
+import home from 'assets/icons/home.svg';
+import search from 'assets/icons/search.svg';
+import message from 'assets/icons/send.svg';
+import group from 'assets/icons/users.svg';
+import saved from 'assets/icons/bookmark.svg';
 
 const sidebarData = [
   {

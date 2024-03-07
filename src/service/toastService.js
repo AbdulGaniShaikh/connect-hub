@@ -27,11 +27,16 @@ const warn = (message) => {
   toast.warn(message, settings);
 };
 
+const internalServerError = () => {
+  toast.error('Internal server error occured.', settings);
+};
+
 const toastService = {
   error,
   success,
   info,
-  warn
+  warn,
+  internalServerError
 };
 
 export default toastService;

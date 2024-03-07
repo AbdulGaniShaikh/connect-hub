@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import profileDefault from './../../../assets/icons/user.svg';
+import profileDefault from 'assets/icons/user.svg';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import { useSelector } from 'react-redux';
-import { imageUrl } from './../../../global';
+import { imageUrl } from 'global';
 const Sidebar = (props) => {
   const { className } = props;
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
-import FriendRequests from './FriendRequests';
-import YourFriendsContainer from './YourFriendsContainer';
+import FriendRequests from 'components/home/friend-sidebar/FriendRequests';
+import YourFriendsContainer from 'components/home/friend-sidebar/YourFriendsContainer';
 
 const FriendSidebar = (props) => {
   const { className } = props;

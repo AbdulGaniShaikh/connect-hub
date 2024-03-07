@@ -1,11 +1,10 @@
 import Post from 'components/shared/Post';
-import NewPost from './NewPost';
+import NewPost from 'components/home/NewPost';
 import { useEffect, useRef, useState } from 'react';
-import PostSkeleton from './../skeletons/PostSkeleton';
+import PostSkeleton from 'components/skeletons/PostSkeleton';
 import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { useSelector } from 'react-redux';
-import { postService } from './../../service';
-import { HttpStatusCode } from 'axios';
+import { postService } from 'service';
 import NoData from 'components/shared/NoData';
 import { useIsVisible } from 'hooks/useIsVisible';
 
@@ -25,21 +24,22 @@ const MainContent = () => {
     fetchPosts();
   }, [user1]);
 
-  const fetchPosts = () => {
+  const fetchPosts = async () => {
+    if (!user1.userId) return;
     setLoading(true);
-    if (user1.userId) {
-      postService
-        .getFeed(user1.userId, pageToAsk)
-        .then((res) => {
-          if (res.status === HttpStatusCode.Ok) {
-            if (res.data?.length > 0) {
-              setPosts([...posts, ...res.data]);
-              setPageToAsk(pageToAsk + 1);
-            }
-          }
-        })
-        .catch((error) => {})
-        .finally(() => setLoading(false));
+
+    try {
+      const res = await postService.getFeed(user1.userId, pageToAsk);
+      if (res.data?.length > 0) {
+        setPosts([...posts, ...res.data]);
+        setPageToAsk(pageToAsk + 1);
+      }
+    } catch (error) {
+      var res = error.response;
+      if (res) {
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

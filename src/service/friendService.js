@@ -11,28 +11,22 @@ const sendFriendRequest = (senderId, receiverId) => {
   );
 };
 
-const deleteFriendRequest = (senderId, receiverId) => {
-  return axios.put(
-    friendUrls.friendRequests,
-    { senderId, receiverId },
-    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-  );
+const deleteFriendRequest = (requestId) => {
+  return axios.delete(`${friendUrls.friendRequests}/${requestId}`, {
+    withCredentials: true
+  });
 };
 
-const acceptFriendRequest = (senderId, receiverId) => {
-  return axios.put(
-    friendUrls.acceptFr,
-    { senderId, receiverId },
-    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-  );
+const acceptFriendRequest = (requestId) => {
+  return axios.put(`${friendUrls.friendRequests}/${requestId}/accept`, null, {
+    withCredentials: true
+  });
 };
 
-const rejectFriendRequest = (senderId, receiverId) => {
-  return axios.put(
-    friendUrls.rejectFr,
-    { senderId, receiverId },
-    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-  );
+const rejectFriendRequest = (requestId) => {
+  return axios.delete(`${friendUrls.friendRequests}/${requestId}/reject`, {
+    withCredentials: true
+  });
 };
 
 const unfriend = (asker, friendToUnfriend) => {

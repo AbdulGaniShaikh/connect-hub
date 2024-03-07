@@ -3,8 +3,9 @@ import { HttpStatusCode } from 'axios';
 import UserProfileRectangle from 'components/home/friend-sidebar/UserProfileRectangle';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 import { useEffect, useState } from 'react';
-import { toastService, userService } from 'service';
+import { userService } from 'service';
 
 const Search = () => {
   const [search, setSearch] = useState('');
@@ -13,6 +14,8 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
   const [resultSize, setResultSize] = useState(0);
+  const defaultErrorBehavior = useErrorBehavior();
+
   const onChange = (e) => {
     setSearch(e.target.value);
   };
@@ -33,30 +36,38 @@ const Search = () => {
 
   useEffect(() => {
     if (search.trim().length < 3) {
+      return;
+    }
+    const getData = setTimeout(() => {
+      setPage({ ...page, pageNumber: 1 });
+      fetchSearchResults();
+    }, 2000);
+
+    return () => clearTimeout(getData);
+  }, [search]);
+
+  useEffect(() => {
+    if (search.trim().length < 3) {
       setSearchRes([]);
       return;
     }
     fetchSearchResults();
   }, [page]);
 
-  const fetchSearchResults = () => {
+  const fetchSearchResults = async () => {
     setLoading(true);
-    userService
-      .search(search, Math.max(0, page.pageNumber - 1))
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          setSearchRes(res.data.content);
-          var { totalPages, totalElements } = res.data;
-          setResultSize(totalElements);
-          if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
-        }
-      })
-      .catch((error) => {
-        toastService.error('Some error occured');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const res = await userService.search(search, Math.max(0, page.pageNumber - 1));
+
+      setSearchRes(res.data.content);
+      var { totalPages, totalElements } = res.data;
+      setResultSize(totalElements);
+      if (page.totalPages !== totalPages) setPage({ ...page, totalPages });
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

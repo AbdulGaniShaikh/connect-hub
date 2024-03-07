@@ -6,60 +6,46 @@ import { useNavigate } from 'react-router-dom';
 import { HttpStatusCode } from 'axios';
 import emailImg from 'assets/icons/email.svg';
 import Spinner from 'components/shared/Spinner';
+import useLogout from 'hooks/useLogout';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const UnverifiedAccount = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [logout] = useLogout();
+  const defaultErrorBehavior = useErrorBehavior();
 
-  const resendVerificationLink = (email) => {
-    authService
-      .resendVerificationLink(email)
-      .then(() => {
-        toastService.success('Account verification mail was sent successfully');
-      })
-      .catch((error) => {
-        const res = error.response;
-        if (!res) {
-          toastService.error('Some error occured');
-          return;
-        }
-        if (res.status >= 500) {
-          toastService.error('Internal Server Error Occured');
-          return;
-        }
-        toastService.error(res.data?.message);
-      });
+  const resendVerificationLink = async (email) => {
+    try {
+      await authService.resendVerificationLink(email);
+      toastService.success('Account verification mail was sent successfully');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
+  };
+
+  const loadData = async (userId) => {
+    try {
+      const res = await userService.getUser(userId);
+
+      dispatch(setUserInfo(res.data.payload));
+      if (res.data.payload.verified) {
+        navigate('/');
+      }
+      setEmail(res.data.payload.email);
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
   };
 
   useEffect(() => {
     var userId = storageService.getUserId();
     if (!userId) {
-      authService
-        .logout()
-        .then(() => {
-          navigate('/login');
-          toastService.error('There was some error. Please login again.');
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      logout();
     }
-    userService
-      .getUser(userId)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          dispatch(setUserInfo(res.data.payload));
-          if (res.data.payload.verified) {
-            navigate('/');
-          }
-          setEmail(res.data.payload.email);
-        }
-      })
-      .catch((error) => {
-        toastService.error(error?.response?.message);
-      });
+    loadData(userId);
   }, [email]);
 
   return (
@@ -84,20 +70,7 @@ const UnverifiedAccount = () => {
 
         <button
           type="button"
-          onClick={() => {
-            setLoading(true);
-            authService
-              .logout()
-              .then(() => {
-                navigate('/login');
-              })
-              .catch((error) => {
-                console.log(error);
-              })
-              .finally(() => {
-                setLoading(false);
-              });
-          }}
+          onClick={logout}
           className="flex justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         >
           {loading && <Spinner />}

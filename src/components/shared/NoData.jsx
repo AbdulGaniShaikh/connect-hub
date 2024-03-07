@@ -1,4 +1,4 @@
-import noData from './../../assets/images/no-data.jpg';
+import noData from 'assets/images/no-data.jpg';
 const NoData = (props) => {
   const { message } = props;
   return (

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateDescription } from './../../../redux/slices/userInfoSlice';
-import { toastService, userService } from './../../../service';
-import { HttpStatusCode } from 'axios';
+import { toastService, userService } from 'service';
+import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const DescriptionSection = (props) => {
   const { isVisitingProfile, user } = props;
@@ -10,6 +10,7 @@ const DescriptionSection = (props) => {
   const [desp, setDesp] = useState('');
   const [editDesp, setEditDesp] = useState(desp);
   const dispatch = useDispatch();
+  const defaultErrorBehavior = useErrorBehavior();
 
   const editDespRef = useRef(null);
 
@@ -24,26 +25,22 @@ const DescriptionSection = (props) => {
     setEditDesp(e.target.value);
   };
 
-  const onUpdateClick = () => {
+  const onUpdateClick = async () => {
     if (editDesp === desp) {
       setIsDespEdtVisible(false);
       return;
     }
-    userService
-      .updateDesp(user.userId, editDesp)
-      .then((res) => {
-        if (res.status === HttpStatusCode.Ok) {
-          toastService.success('description was updated successfully');
-          dispatch(updateDescription(editDesp));
-          setDesp(editDesp);
-        }
-      })
-      .catch((error) => {
-        toastService.error(error.response.data.message);
-      })
-      .finally(() => {
-        setIsDespEdtVisible(false);
-      });
+    try {
+      await userService.updateDesp(user.userId, editDesp);
+      toastService.success('Description was updated successfully');
+
+      dispatch(updateDescription(editDesp));
+      setDesp(editDesp);
+    } catch (error) {
+      defaultErrorBehavior(error);
+    } finally {
+      setIsDespEdtVisible(false);
+    }
   };
 
   useEffect(() => {
@@ -51,7 +48,7 @@ const DescriptionSection = (props) => {
       editDespRef.current.style.height = 'auto';
       editDespRef.current.style.height = editDespRef.current.scrollHeight + 'px';
     }
-  }, [editDesp]);
+  }, [editDesp, isVisitingProfile]);
 
   useEffect(() => {
     if (!isVisitingProfile) editDespRef.current.style.height = document.getElementById('desp').scrollHeight + 'px';
