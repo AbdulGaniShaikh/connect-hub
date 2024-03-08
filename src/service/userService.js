@@ -1,6 +1,6 @@
 import axios from 'axios';
 import storageService from 'service/storageService';
-import { authUrl, friendUrl, searchUrl, userUrl } from 'global';
+import { authUrl, friendUrl, searchUrl, serverStatusUrl, userUrl } from 'global';
 
 const pageSize = 10;
 
@@ -69,6 +69,10 @@ const changePassword = (userId, oldPassword, newPassword) => {
   return axios.put(`${userUrl}/${userId}/change-password`, { oldPassword, newPassword }, { withCredentials: true });
 };
 
+const fetchServerStatus = () => {
+  return axios.get(serverStatusUrl);
+};
+
 const userService = {
   getUser,
   fetchLastSeen,
@@ -81,7 +85,8 @@ const userService = {
   getMyRelation,
   getSavedPosts,
   fetchAccessToken,
-  changePassword
+  changePassword,
+  fetchServerStatus
 };
 
 export default userService;

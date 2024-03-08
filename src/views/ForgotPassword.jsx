@@ -29,7 +29,7 @@ const ForgotPassword = () => {
     if (otpSent) {
       resetPassword(email, password, otp, setLoadingContinue);
     } else {
-      sendOtpToResetPassword(email);
+      sendOtpToResetPassword(email, setLoadingContinue);
     }
   };
 

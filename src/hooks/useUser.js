@@ -1,12 +1,10 @@
 import { storageService, userService } from 'service';
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from './../redux/slices/userInfoSlice';
-import { setInbox } from './../redux/slices/messageSlice';
 import { useNavigate } from 'react-router-dom';
 import useSocket from 'hooks/useSocket';
 import { useEffect } from 'react';
 import useLogout from 'hooks/useLogout';
-import chatService from 'service/chatService';
 import useErrorBehavior from './useErrorBehavior';
 
 const useUser = () => {
@@ -26,19 +24,8 @@ const useUser = () => {
       }
       connect(userId);
     } catch (error) {
-      logout();
-      return;
-    }
-  };
-
-  const fetchInbox = async () => {
-    try {
-      const res = await chatService.fetchInbox(userId, 0);
-      if (!res.data.empty) {
-        dispatch(setInbox([...res.data.content]));
-      }
-    } catch (error) {
       defaultErrorBehavior(error);
+      return;
     }
   };
 
@@ -48,10 +35,8 @@ const useUser = () => {
       return;
     }
     getUserInfo();
-    // fetchInbox();
-
     return disconnect;
-  }, []);
+  }, [userId]);
 };
 
 export default useUser;

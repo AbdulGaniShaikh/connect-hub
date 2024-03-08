@@ -21,34 +21,66 @@ import UnverifiedAccount from 'views/UnverifiedAccount';
 import ChangePassword from 'views/ChangePassword';
 import NotFound from 'views/NotFound';
 import PostWithComment from 'views/PostWithComment';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectServerStatus, setStatus } from './redux/slices/serverStatus';
+import { useEffect } from 'react';
+import { userService } from 'service';
+import ServerDown from 'views/ServerDown';
 
 const App = () => {
+  const dispatch = useDispatch();
+  const serverStatus = useSelector(selectServerStatus);
+
+  const fetchServerStatus = async () => {
+    try {
+      const res = await userService.fetchServerStatus();
+      dispatch(setStatus(res.data));
+    } catch (error) {
+      const res = error.response;
+      if (!res) {
+        dispatch(setStatus('DOWN'));
+        return;
+      }
+    }
+  };
+  useEffect(() => {
+    fetchServerStatus();
+  }, []);
+
+  // if (serverStatus !== 'RUNNING') {
+  //   return <div>Server not running</div>;
+  // }
+
   return (
     <div className="">
       <SkeletonTheme>
         <ToastContainer />
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/verify-account/:email" element={<VerifyAccount />} />
-            <Route path="/unverified-account" element={<UnverifiedAccount />} />
-            <Route path="" element={<Home />}>
-              <Route path="" element={<MainContent />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="/users/:id/friends" element={<Friends />} />
-              <Route path="friend-requests" element={<FriendRequests />} />
-              <Route path="/users/:id" element={<User />} />
-              <Route path="/inbox" element={<Inbox />} />
-              <Route path="/inbox/:id" element={<Chat />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/saved" element={<SavedPosts />} />
-              <Route path="/change-password" element={<ChangePassword />} />
-              <Route path="/posts/:postId" element={<PostWithComment />} />
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
+            {serverStatus !== 'RUNNING' && <Route path="*" element={<ServerDown />} />}
+            {serverStatus === 'RUNNING' && (
+              <>
+                <Route path="/login" element={<Login />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/verify-account/:email" element={<VerifyAccount />} />
+                <Route path="/unverified-account" element={<UnverifiedAccount />} />
+                <Route path="" element={<Home />}>
+                  <Route path="" element={<MainContent />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="/users/:id/friends" element={<Friends />} />
+                  <Route path="friend-requests" element={<FriendRequests />} />
+                  <Route path="/users/:id" element={<User />} />
+                  <Route path="/inbox" element={<Inbox />} />
+                  <Route path="/inbox/:id" element={<Chat />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/saved" element={<SavedPosts />} />
+                  <Route path="/change-password" element={<ChangePassword />} />
+                  <Route path="/posts/:postId" element={<PostWithComment />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </>
+            )}
           </Routes>
         </BrowserRouter>
       </SkeletonTheme>

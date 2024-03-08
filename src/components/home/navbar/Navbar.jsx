@@ -36,7 +36,7 @@ const Navbar = () => {
       <div className="px-5 grid grid-cols-2 max-sm:grid-cols-2 justify-between items-center ">
         <div className="flex items-center">
           <Link to="" className="flex items-center gap-3">
-            <img src="favicon.ico" alt="logo" className="size-7" />
+            <img src="/favicon.ico" alt="logo" className="size-7" />
             <h1 className="text-2xl">ConnectHub</h1>
           </Link>
         </div>
