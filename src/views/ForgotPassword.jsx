@@ -8,6 +8,7 @@ import { MuiOtpInput } from 'mui-one-time-password-input';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService, toastService } from 'service';
+import hashPassword from 'utility/hashPassword';
 import { isValidEmail, isValidPassword } from 'utility/inputValidators';
 
 const ForgotPassword = () => {
@@ -48,11 +49,16 @@ const ForgotPassword = () => {
     if (v1 || v2) {
       return;
     }
+    const { success, hash } = await hashPassword(password);
+    if (!success) {
+      toastService.error('Please try again');
+      return;
+    }
 
     otp = 0 + +otp;
     try {
       setLoadingContinue(true);
-      await authService.resetPassword(email, password, otp);
+      await authService.resetPassword(email, hash, otp);
       toastService.success('Password was reset. Login with your new password to access your account.');
       navigate('/login');
     } catch (error) {

@@ -10,6 +10,7 @@ import SubmitButton from 'components/shared/SubmitButton';
 import PasswordInput from 'components/shared/PasswordInput';
 import TextInput from 'components/shared/TextInput';
 import { isValidEmail } from 'utility/inputValidators';
+import hashPassword from 'utility/hashPassword';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +38,16 @@ const Login = () => {
         return;
       }
       setLoading(true);
-      const res = await authService.login(email, password);
+
+      const { success, hash } = await hashPassword(password);
+      if (!success) {
+        toastService.error('Please try again');
+        setLoading(false);
+        return;
+      }
+
+      const res = await authService.login(email, hash);
+
       dispatch(setUserInfo(res.data));
       toastService.success('Logged In successfully');
       navigate('/');
