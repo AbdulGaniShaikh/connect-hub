@@ -2,6 +2,7 @@ import { useDispatch } from 'react-redux';
 import { addMessage, increaseCount, newMessage } from '../redux/slices/messageSlice';
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
+import { backendUrl } from 'global';
 // import sound from 'assets/sound/notification.wav';
 
 var stompClient = null;
@@ -22,7 +23,7 @@ const useSocket = (userId) => {
   };
 
   const connect = (userId) => {
-    let Sock = new SockJS('http://localhost:8081/ws');
+    let Sock = new SockJS(`${backendUrl}/ws`);
     stompClient = over(Sock);
     senderId = userId;
     stompClient.connect({}, onConnected, onError);

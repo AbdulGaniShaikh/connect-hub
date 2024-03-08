@@ -1,6 +1,6 @@
-# ConnectHub - Social Media App Backend
+# ConnectHub - Social Media App
 
-ConnectHub is a feature-rich social media app backend developed using Spring Boot and MongoDB. It provides a robust foundation for building a modern social networking platform with a focus on user interaction and content sharing.
+ConnectHub is a feature-rich social media app developed using React. It provides a robust foundation for building a modern social networking platform with a focus on user interaction and content sharing.
 
 ## How to run
 
@@ -8,7 +8,7 @@ ConnectHub is a feature-rich social media app backend developed using Spring Boo
 
         git clone https://github.com/AbdulGaniShaikh/connect-hub.git
 
-2.  Install the packages and start the Express server
+2.  Install the packages and start the React server
 
         npm install
         npm start
