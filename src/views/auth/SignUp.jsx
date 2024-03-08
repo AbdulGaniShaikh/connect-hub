@@ -9,6 +9,7 @@ import StrongPasswordInput from 'components/shared/StrongPasswordInput';
 import TextInput from 'components/shared/TextInput';
 import { isValidEmail, isValidPassword, isValidUsername } from 'utility/inputValidators';
 import PasswordInput from 'components/shared/PasswordInput';
+import hashPassword from 'utility/hashPassword';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -43,10 +44,17 @@ const SignUp = () => {
       }
 
       setLoading(true);
+
+      const { success, hash } = await hashPassword(password);
+      if (!success) {
+        setLoading(false);
+        toastService.error('Please try again');
+        return;
+      }
       const form = {
         username,
         email,
-        password
+        password: hash
       };
       await authService.signUp(form);
       toastService.success('Registered successfully');

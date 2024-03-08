@@ -7,6 +7,7 @@ import { isValidPassword } from 'utility/inputValidators';
 import SubmitButton from 'components/shared/SubmitButton';
 import PasswordInput from 'components/shared/PasswordInput';
 import StrongPasswordInput from 'components/shared/StrongPasswordInput';
+import hashPassword from 'utility/hashPassword';
 
 const ChangePassword = () => {
   const defaultErrorBehavior = useErrorBehavior();
@@ -18,8 +19,24 @@ const ChangePassword = () => {
     try {
       if (oldPassword.trim().length === 0) return;
       if (!isValidPassword(newPassword.trim())) return;
+
       setLoading(true);
-      await userService.changePassword(userId, oldPassword, newPassword);
+
+      var { success: successOld, hash: hashOld } = await hashPassword(oldPassword);
+      if (!successOld) {
+        setLoading(false);
+        toastService.error('Please try again');
+        return;
+      }
+
+      var { success: successNew, hash: hashNew } = await hashPassword(newPassword);
+      if (!successNew) {
+        setLoading(false);
+        toastService.error('Please try again');
+        return;
+      }
+
+      await userService.changePassword(userId, hashOld, hashNew);
       toastService.success('Password was changed successfully');
       setNewPassword('');
       setOldPassword('');
