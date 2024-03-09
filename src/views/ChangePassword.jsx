@@ -22,19 +22,9 @@ const ChangePassword = () => {
 
       setLoading(true);
 
-      var { success: successOld, hash: hashOld } = await hashPassword(oldPassword);
-      if (!successOld) {
-        setLoading(false);
-        toastService.error('Please try again');
-        return;
-      }
+      const hashOld = hashPassword(oldPassword);
 
-      var { success: successNew, hash: hashNew } = await hashPassword(newPassword);
-      if (!successNew) {
-        setLoading(false);
-        toastService.error('Please try again');
-        return;
-      }
+      const hashNew = hashPassword(newPassword);
 
       await userService.changePassword(userId, hashOld, hashNew);
       toastService.success('Password was changed successfully');

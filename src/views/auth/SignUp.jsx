@@ -45,12 +45,8 @@ const SignUp = () => {
 
       setLoading(true);
 
-      const { success, hash } = await hashPassword(password);
-      if (!success) {
-        setLoading(false);
-        toastService.error('Please try again');
-        return;
-      }
+      const hash = hashPassword(password);
+
       const form = {
         username,
         email,

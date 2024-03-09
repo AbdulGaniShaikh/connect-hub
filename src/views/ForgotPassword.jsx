@@ -49,11 +49,7 @@ const ForgotPassword = () => {
     if (v1 || v2) {
       return;
     }
-    const { success, hash } = await hashPassword(password);
-    if (!success) {
-      toastService.error('Please try again');
-      return;
-    }
+    const hash = hashPassword(password);
 
     otp = 0 + +otp;
     try {

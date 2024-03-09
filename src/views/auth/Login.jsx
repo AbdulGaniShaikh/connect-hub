@@ -39,12 +39,7 @@ const Login = () => {
       }
       setLoading(true);
 
-      const { success, hash } = await hashPassword(password);
-      if (!success) {
-        toastService.error('Please try again');
-        setLoading(false);
-        return;
-      }
+      const hash = hashPassword(password);
 
       const res = await authService.login(email, hash);
 

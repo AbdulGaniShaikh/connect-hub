@@ -1,13 +1,7 @@
-import bcrypt from 'bcryptjs';
+import CryptoJS from 'crypto-js';
 
-const hashPassword = async (password) => {
-  try {
-    const saltRounds = 10;
-    const hash = await bcrypt.hash(password, saltRounds);
-    return { success: true, hash };
-  } catch (error) {
-    return { success: false, error: 'cannot create hash' };
-  }
+const hashPassword = (password) => {
+  return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
 };
 
 export default hashPassword;
