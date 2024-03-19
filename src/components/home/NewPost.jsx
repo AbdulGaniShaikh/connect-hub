@@ -9,6 +9,7 @@ import { postService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
 import Spinner from 'components/shared/Spinner';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import imageCompressor from 'utility/imageCompressor';
 
 const NewPost = () => {
   const user = useSelector(selectUserInfo);
@@ -29,7 +30,8 @@ const NewPost = () => {
     }
     setLoading(true);
     try {
-      const res = await postService.uploadNewPost(user.userId, image, val);
+      const compressed = await imageCompressor(image, 0.6);
+      const res = await postService.uploadNewPost(user.userId, compressed, val);
       if (res.status === HttpStatusCode.Ok) {
         toastService.success('Post uploaded successfully');
         setVal('');
@@ -58,7 +60,6 @@ const NewPost = () => {
     if (e.target.files[0]) {
       setImageToDisplay(URL.createObjectURL(e.target.files[0]));
       setImage(e.target.files[0]);
-
       uploadedImageRef.current.classList.remove('hidden');
     } else {
       if (!image) uploadedImageRef.current.classList.add('hidden');

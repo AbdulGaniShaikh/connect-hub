@@ -10,6 +10,7 @@ import Spinner from 'components/shared/Spinner';
 import { verified } from 'assets/icons';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import imageCompressor from 'utility/imageCompressor';
 
 const ProfileSection = (props) => {
   const coverImgRef = useRef(null);
@@ -45,7 +46,8 @@ const ProfileSection = (props) => {
     const image = event.target.files[0];
     if (image) {
       try {
-        const res = await userService.updateCover(user.userId, image);
+        const compressed = await imageCompressor(image, 0.6);
+        const res = await userService.updateCover(user.userId, compressed);
         if (res.status === HttpStatusCode.Ok) {
           dispatch(updateCoverImageId(res.data.payload));
           toastService.success('cover image successfully updated');
@@ -60,7 +62,8 @@ const ProfileSection = (props) => {
     const image = event.target.files[0];
     if (image) {
       try {
-        const res = await userService.updateProfile(user.userId, image);
+        const compressed = await imageCompressor(image, 0.2);
+        const res = await userService.updateProfile(user.userId, compressed);
         if (res.status === HttpStatusCode.Ok) {
           dispatch(updateProfileImageId(res.data.payload));
           toastService.success('profile successfully updated');
