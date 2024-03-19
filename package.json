@@ -15,6 +15,7 @@
     "@types/bcrypt": "^5.0.2",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
+    "compressorjs": "^1.2.1",
     "crypto-js": "^4.2.0",
     "js-cookie": "^3.0.5",
     "mui-one-time-password-input": "^2.0.1",
