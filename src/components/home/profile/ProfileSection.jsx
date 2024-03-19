@@ -123,8 +123,8 @@ const ProfileSection = (props) => {
           <i className="fa-regular fa-edit text-gray-800 fa-xl show-when-hover absolute -translate-y-1/2 -translate-x-1/2 top-1/2 left-1/2 hidden"></i>
         )}
       </div>
-      <div className="grid grid-flow-col gap-5 ">
-        <div className="ml-3 absolute -translate-y-1/2 overflow-hidden">
+      <div className="grid grid-flow-row -mt-20 gap-3">
+        <div className="flex overflow-hidden justify-center items-center">
           <div
             onClick={() => {
               if (!isVisitingProfile) pfpInpRef.current.click();
@@ -147,7 +147,7 @@ const ProfileSection = (props) => {
           </div>
         </div>
 
-        <div className="ml-36">
+        <div className="flex flex-col items-center justify-center">
           <p className="text-xl tooltip-container font-medium tooltip inline-block relative">
             {user.username} {user.verified && <img src={verified} alt="" className="size-5 aspect-square inline" />}
             <span className="text-gray-50 tooltip invisible px-2 py-1 rounded-md absolute bottom-full left-1/2 text-xs bg-black select-none">
@@ -156,15 +156,17 @@ const ProfileSection = (props) => {
           </p>
           <p className="">{user.email}</p>
         </div>
-        <div className="flex flex-col justify-center items-start">
-          <p className="text-md font-medium">Posts</p>
-          <p className="">{user.totalPost}</p>
-        </div>
+        <div className="grid grid-flow-col">
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-md font-medium">Posts</p>
+            <p className="">{user.totalPost}</p>
+          </div>
 
-        <Link to={`/users/${user.userId}/friends`} className="flex flex-col justify-center items-start">
-          <p className="text-md font-medium">Friends</p>
-          <p className="">{user.totalFriends}</p>
-        </Link>
+          <Link to={`/users/${user.userId}/friends`} className="flex flex-col justify-center items-center">
+            <p className="text-md font-medium">Friends</p>
+            <p className="">{user.totalFriends}</p>
+          </Link>
+        </div>
       </div>
       {isVisitingProfile && (
         <>
@@ -227,7 +229,7 @@ const RelationNone = (props) => {
   };
 
   return (
-    <div className="flex gap-x-3 w-1/2 justify-end self-end mt-3">
+    <div className="flex gap-x-3 w-full sm:w-1/2 justify-end self-end ">
       <button
         onClick={addFriend}
         className="flex justify-center items-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-1/2 px-5 py-2 text-center"
@@ -259,7 +261,7 @@ const RelationFRSent = (props) => {
   };
 
   return (
-    <div className="flex gap-x-3 w-1/2 justify-end self-end mt-3">
+    <div className="flex gap-x-3 w-full sm:w-1/2 justify-end self-end ">
       <button
         onClick={unsendRequest}
         className="flex justify-center items-center text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-1/2 px-5 py-2 text-center"
@@ -303,7 +305,7 @@ const RelationFRRecieved = (props) => {
   };
 
   return (
-    <div className="flex gap-x-3 w-1/2 self-end mt-3">
+    <div className="flex gap-x-3 w-full sm:w-1/2 self-end ">
       <button
         onClick={rejectClick}
         className="flex justify-center items-center text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
@@ -341,7 +343,7 @@ const RelationFriend = (props) => {
   };
 
   return (
-    <div className="flex gap-x-3 w-1/2 self-end mt-3">
+    <div className="flex gap-x-3 w-full sm:w-1/2 self-end ">
       <button className="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4  ring-gray-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center">
         <Link to={'/inbox/' + userId}>Message</Link>
       </button>
@@ -360,7 +362,7 @@ const RelationSelf = () => {
   const [logout] = useLogout();
 
   return (
-    <div className="flex gap-x-3 w-1/2 self-end mt-3">
+    <div className="flex gap-x-3 w-full sm:w-1/2 self-end">
       <button className="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4  ring-gray-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center">
         <Link to="/saved">Saved Posts</Link>
       </button>
