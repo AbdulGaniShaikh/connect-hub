@@ -12,9 +12,9 @@ const Sidebar = (props) => {
         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-64 h-32 object-cover" />
         <Link
           to="/profile"
-          className="shadow-md shadow-gray-500 absolute top-20 left-1/2 -translate-x-1/2 rounded-full"
+          className="shadow-md shadow-gray-500 absolute top-20 size-24 left-1/2 -translate-x-1/2 rounded-full"
         >
-          <ProfileImage id={user.profileImageId} height="24" width="24" />
+          <ProfileImage id={user.profileImageId} height="full" width="full" />
         </Link>
         <div className="grid gap-y-3 place-items-center pt-12 px-5 py-5">
           <Link to="/profile" className="grid place-items-center mt-3">

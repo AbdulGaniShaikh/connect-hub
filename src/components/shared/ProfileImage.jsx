@@ -25,8 +25,6 @@ const ProfileImage = ({ id = '', height = 'circleImage', width = 'circleImage' }
     if (id === '') return;
     if (image !== null) return;
     fetchImage();
-    // if (id !== '' && isImageVisible && image == null) {
-    // }
   }, [isImageVisible, image, id]);
   return (
     <div

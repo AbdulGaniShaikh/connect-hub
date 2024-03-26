@@ -1,7 +1,6 @@
-const backendUrl = 'http://localhost:8081';
-const clientUrl = 'http://localhost:3000';
-// const backendUrl = 'https://backend.connecthubback.tech';
-// const clientUrl = 'https://client.connecthubback.tech';
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const clientUrl = process.env.REACT_APP_CLIENT_URL;
+
 const imageUrl = backendUrl + '/api/image';
 const authUrl = backendUrl + '/api/auth/';
 const userUrl = backendUrl + '/api/users';
