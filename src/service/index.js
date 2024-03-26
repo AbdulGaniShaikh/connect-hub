@@ -4,4 +4,5 @@ import storageService from 'service/storageService';
 import userService from 'service/userService';
 import postService from 'service/postService';
 import friendService from 'service/friendService';
-export { authService, toastService, storageService, userService, postService, friendService };
+import imageService from 'service/imageService';
+export { authService, toastService, storageService, userService, postService, friendService, imageService };

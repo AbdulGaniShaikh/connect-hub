@@ -1,31 +1,26 @@
-import { useNavigate } from 'react-router-dom';
-import profileDefault from 'assets/icons/user.svg';
+import { Link } from 'react-router-dom';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import { useSelector } from 'react-redux';
-import { imageUrl } from 'global';
+import ProfileImage from 'components/shared/ProfileImage';
 const Sidebar = (props) => {
   const { className } = props;
-  const navigate = useNavigate();
   const user = useSelector(selectUserInfo);
-  const onClick = () => {
-    navigate('/profile');
-  };
 
   return (
     <aside id="logo-sidebar" className={'fixed w-64 h-screen ' + className}>
       <div className="grid place-content-center	flex-row bg-white w-full rounded-3xl overflow-hidden select-none">
         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-64 h-32 object-cover" />
-        <img
-          className="shadow-md shadow-gray-500 absolute top-20 left-1/2 -translate-x-1/2 rounded-full h-24 w-24 object-cover cursor-pointer bg-white"
-          src={user.profileImageId ? `${imageUrl}/${user.profileImageId}` : profileDefault}
-          alt="Userprofile"
-          onClick={onClick}
-        />
+        <Link
+          to="/profile"
+          className="shadow-md shadow-gray-500 absolute top-20 left-1/2 -translate-x-1/2 rounded-full"
+        >
+          <ProfileImage id={user.profileImageId} height="24" width="24" />
+        </Link>
         <div className="grid gap-y-3 place-items-center pt-12 px-5 py-5">
-          <div className="grid place-items-center cursor-pointer mt-3" onClick={onClick}>
+          <Link to="/profile" className="grid place-items-center mt-3">
             <p className="font-medium text-md">{user.username ? user.username : 'demo usernam'}</p>
             <p className="text-sm">{user.email ? user.email : 'sem@gmai.com'}</p>
-          </div>
+          </Link>
           <div className="grid place-items-center">
             <p className="font-medium text-md">Total Friends</p>
             <p className="text-sm">{user.totalFriends ? user.totalFriends : 0}</p>
@@ -35,9 +30,9 @@ const Sidebar = (props) => {
             <p className="text-sm">{user.totalPost ? user.totalPost : 0}</p>
           </div>
           <hr className="h-1 w-full" />
-          <p className="text-primaryColor font-medium cursor-pointer" onClick={onClick}>
+          <Link to="/profile" className="text-primaryColor font-medium">
             View my profile
-          </p>
+          </Link>
         </div>
       </div>
     </aside>

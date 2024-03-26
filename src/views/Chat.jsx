@@ -11,6 +11,7 @@ import { useIsVisible } from 'hooks/useIsVisible';
 import userIcon from 'assets/icons/user.svg';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import Linkify from 'components/shared/Linkify';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const Chat = () => {
   const { id } = useParams();
@@ -229,11 +230,7 @@ const ProfileChat = (props) => {
   return (
     <div className="grid gap-y-3 h-fit pr-5">
       <Link to={`/users/${userId}`} className="flex overflow-hidden items-center justify-center mr-5">
-        <img
-          src={profileImageId ? `${imageUrl}/${profileImageId}` : userIcon}
-          alt={userId}
-          className="rounded-full h-circleImage w-circleImage aspect-square object-cover"
-        />
+        <ProfileImage id={profileImageId} />
         <div className=" text-gray-900 text-sm px-2.5 overflow-hidden">
           <p className="font-medium overflow-ellipsis overflow-hidden ">{username}</p>
           <div className="text-xs overflow-ellipsis overflow-hidden">
@@ -326,11 +323,7 @@ const PostMessage = ({ postId }) => {
     >
       <div className="grid bg-gray-50">
         <Link to={`/users/${post.userId}`} target="_blank" className="flex items-center justify-start p-3">
-          <img
-            src={post.profileImageId ? `${imageUrl}/${post.profileImageId}` : userIcon}
-            alt={post.userId}
-            className="rounded-full  h-circleImage w-circleImage aspect-square object-cover bg-gray-200"
-          />
+          <ProfileImage id={post.profileImageId} />
           <div className=" text-gray-900 text-sm px-2.5 overflow-hidden">
             <p className="font-medium overflow-ellipsis overflow-hidden ">{post.username}</p>
           </div>

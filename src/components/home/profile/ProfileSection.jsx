@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom/dist';
 import { useDispatch } from 'react-redux';
-import profileDefault from 'assets/icons/user.svg';
 import { updateCoverImageId, updateProfileImageId } from './../../../redux/slices/userInfoSlice';
 import { friendService, toastService, userService } from 'service';
 import { HttpStatusCode } from 'axios';
@@ -11,6 +10,7 @@ import { verified } from 'assets/icons';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import imageCompressor from 'utility/imageCompressor';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const ProfileSection = (props) => {
   const coverImgRef = useRef(null);
@@ -80,7 +80,7 @@ const ProfileSection = (props) => {
         <div>
           <input
             ref={coverInpRef}
-            accept="image/png, image/jpeg, image/gif"
+            accept="image/*"
             className="hidden"
             type="file"
             onChange={onCoverInputChange}
@@ -88,7 +88,7 @@ const ProfileSection = (props) => {
           />
           <input
             ref={pfpInpRef}
-            accept="image/png, image/jpeg, image/gif"
+            accept="image/*"
             className="hidden"
             type="file"
             onChange={onPfpInputChange}
@@ -132,12 +132,7 @@ const ProfileSection = (props) => {
             ref={profileImageRef}
             className="cover-photo relative inline-block bg-gray-100 h-32 w-32 rounded-full overflow-hidden cursor-pointer "
           >
-            <img
-              src={user.profileImageId ? `${imageUrl}/${user.profileImageId}` : profileDefault}
-              alt=""
-              onMouseMove={(e) => saveCursorPosition(e.clientX, e.clientY, profileImageRef)}
-              className="w-full h-full zoom-on-mouse object-cover hover:scale-150 duration-100 ease-linear"
-            />
+            <ProfileImage id={user.profileImageId} height="full" width="full" />
             {!isVisitingProfile && (
               <div className="show-when-hover backdrop-blur-sm top-0 absolute h-full w-full bg-hoverGray hidden"></div>
             )}

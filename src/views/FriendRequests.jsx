@@ -1,7 +1,7 @@
 import accept from 'assets/icons/check.svg';
 import decline from 'assets/icons/close.svg';
 import NoData from 'components/shared/NoData';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeRequest } from './../redux/slices/friendRequestsSlice';
 import { imageUrl } from 'global';
@@ -17,6 +17,7 @@ import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { HttpStatusCode } from 'axios';
 import { Pagination } from '@mui/material';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const FriendRequests = () => {
   const [friendRequests, setFriendRequests] = useState([]);
@@ -108,11 +109,6 @@ const FriendRequests = () => {
 
 const FriendRequest = (props) => {
   const { profileImageId, username, email, userId, onDecline, onAccept, friendRequestId } = props;
-  const navigate = useNavigate();
-
-  const onUserClick = () => {
-    navigate(`/users/${userId}`);
-  };
   const onDeclineClick = () => {
     onDecline(friendRequestId, username);
   };
@@ -122,16 +118,13 @@ const FriendRequest = (props) => {
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
-        <img
-          onClick={onUserClick}
-          src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-          alt={userId}
-          className="rounded-full h-circleImage w-circleImage aspect-square object-cover"
-        />
-        <div onClick={onUserClick} className=" text-gray-900 grow text-sm px-2.5 overflow-hidden">
+        <Link to={`/users/${userId}`} className="rounded-full h-circleImage w-circleImage">
+          <ProfileImage id={profileImageId} />
+        </Link>
+        <Link to={`/users/${userId}`} className=" text-gray-900 flex-1 text-sm px-2.5 overflow-hidden">
           <p className="font-medium overflow-ellipsis overflow-hidden ">{username ? username : 'username'}</p>
           <p className="font-thin text-xs overflow-ellipsis overflow-hidden">{email ? email : 'email'}</p>
-        </div>
+        </Link>
         <div className="flex gap-x-2">
           <div
             onClick={onDeclineClick}
