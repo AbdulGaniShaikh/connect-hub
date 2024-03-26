@@ -3,6 +3,7 @@ import { home, search, user, userPlus } from 'assets/icons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { imageUrl } from 'global';
+import ProfileImage from './ProfileImage';
 const iconList = [
   {
     icon: home,
@@ -31,12 +32,11 @@ const BottomNavigation = () => {
           <BottomNavigationIcon {...item} key={i} />
         ))}
         <li>
-          <Link to={'/profile'} className=" flex flex-col justify-center items-center">
-            <img
-              src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-              alt="profile"
-              className="size-10 bg-red-400 rounded-full object-cover outline outline-primaryColor"
-            />
+          <Link
+            to="/profile"
+            className="size-10 flex justify-center items-center rounded-full outline outline-primaryColor"
+          >
+            <ProfileImage id={profileImageId} height="full" width="full" />
           </Link>
         </li>
       </ul>

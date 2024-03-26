@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import chatService from 'service/chatService';
 import { userService } from 'service';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const Inbox = () => {
   const { userId } = useSelector(selectUserInfo);
@@ -105,15 +106,11 @@ const InboxItem = (props) => {
             isActive && 'outline outline-2 outline-offset-2 outline-green-500'
           } m-1 relative rounded-full aspect-square object-cover h-circleImage w-circleImage`}
         >
-          <img
-            src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-            className="rounded-full aspect-square object-cover"
-            alt={userId}
-          />
+          <ProfileImage id={profileImageId} />
           {isActive && <p className="absolute h-3 w-3 rounded-full bg-green-500 -right-px -bottom-px"></p>}
         </div>
 
-        <div className="text-gray-900 w-full text-sm px-2.5 ">
+        <div className="text-gray-900 flex-1 text-sm px-2.5 ">
           <p className="font-medium">{username}</p>
           <div className={`text-xs ${unreadMessageCount > 0 && 'font-bold'}`}>
             <p className="">{subtitle.length > 40 ? subtitle.substring(0, 40) + '...' : subtitle}</p>

@@ -1,6 +1,5 @@
-import { imageUrl } from 'global';
-import profilePlaceholder from 'assets/icons/user.svg';
 import { Link } from 'react-router-dom';
+import ProfileImage from './ProfileImage';
 
 const Comment = (props) => {
   const { userId, username, profileImageId, comment, date } = props;
@@ -19,12 +18,8 @@ const Comment = (props) => {
   }
   return (
     <Link to={`/users/${userId}`} className="flex justify-start items-start w-fit my-2 pr-5">
-      <img
-        src={profileImageId ? `${imageUrl}/${profileImageId}` : profilePlaceholder}
-        alt=""
-        className="w-circleImage h-circleImage rounded-full bg-gray-100 aspect-square object-cover cursor-pointer "
-      />
-      <div className="text-gray-900 focus:outline-none w-full text-sm mx-2 ">
+      <ProfileImage id={profileImageId} />
+      <div className="text-gray-900 focus:outline-none flex-1 text-sm mx-2 ">
         <p className="inline">
           <span className="font-medium cursor-pointer">{username} </span>
           <span className="text-xs">at {datePosted}</span>

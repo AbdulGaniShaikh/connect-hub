@@ -6,6 +6,7 @@ import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';
 import { removeRequest } from './../../../redux/slices/friendRequestsSlice';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const SingleFriendRequest = (props) => {
   var { username, email, userId, friendRequestId, profileImageId } = props;
@@ -30,11 +31,7 @@ const SingleFriendRequest = (props) => {
           to={`/users/${userId}`}
           className="flex justify-center items-center rounded-full h-circleImage w-circleImage overflow-hidden"
         >
-          <img
-            src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-            alt=""
-            className="w-full h-full aspect-square object-cover bg-gray-100"
-          />
+          <ProfileImage id={profileImageId} height="full" width="full" />
         </Link>
 
         <Link to={`/users/${userId}`} className="text-gray-900 grow text-sm px-2.5 overflow-hidden">

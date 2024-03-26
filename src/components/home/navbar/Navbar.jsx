@@ -9,6 +9,7 @@ import Model from 'components/shared/Model';
 import SettingsDialog from 'components/home/navbar/SettingsDialog';
 import chatService from 'service/chatService';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const Navbar = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -61,12 +62,8 @@ const Navbar = () => {
           >
             <i className="fa-solid fa-gear cursor-pointer"></i>
           </div>
-          <Link to="profile">
-            <img
-              src={user.profileImageId ? `${imageUrl}/${user.profileImageId}` : profileDefault}
-              alt="profile"
-              className="h-circleImage w-circleImage rounded-full object-cover overflow-hidden"
-            />
+          <Link to="/profile">
+            <ProfileImage id={user.profileImageId} key={1} />
           </Link>
         </div>
 

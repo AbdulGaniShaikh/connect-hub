@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Comments from 'components/shared/Comments';
-import profilePlaceholder from 'assets/icons/user.svg';
 import shareIcon from 'assets/icons/send.svg';
 import { Link } from 'react-router-dom';
 import ShareList from 'components/shared/ShareList';
@@ -14,10 +13,11 @@ import useErrorBehavior from 'hooks/useErrorBehavior';
 import Menu, { MenuItem } from 'components/shared/Menu';
 import { copyTextToClipboard } from 'utility/copyToClipboard';
 import Linkify from './Linkify';
+import ProfileImage from './ProfileImage';
 
 const Post = (props) => {
   const { postId, totalComments, text, imageId, createDate, userId, username, profileImageId } = props;
-  const [totalLikes, setTotalLikes] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(props.totalLikes | 0);
   const defaultErrorBehavior = useErrorBehavior();
 
   const id = useSelector(selectUserInfo)?.userId;
@@ -161,19 +161,14 @@ const Post = (props) => {
   useEffect(() => {
     if (!postId || !id) return;
     fetchIsLikeAndSaved();
-    setTotalLikes(props.totalLikes);
   }, [postId, id]);
 
   return (
     <div className="grid grid-flow-row bg-white p-4 rounded-3xl w-full">
       <div className="flex justify-between items-center w-full">
         <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit">
-          <img
-            src={profileImageId ? `${imageUrl}/${profileImageId}` : profilePlaceholder}
-            alt=""
-            className="w-circleImage h-circleImage rounded-full bg-gray-100 aspect-square object-cover"
-          />
-          <div className="text-gray-900 focus:outline-none w-full text-sm mx-2 ">
+          <ProfileImage id={profileImageId} />
+          <div className="text-gray-900 focus:outline-none flex-1 text-sm mx-2 ">
             <p className="font-medium">{username ? username : 'username'}</p>{' '}
             <p className="text-xs font-thin">uploaded on {date}</p>
           </div>
@@ -203,16 +198,9 @@ const Post = (props) => {
       </div>
 
       <div
-        className={
-          imageId ? 'flex justify-center items-start mt-2 center rounded-md mb-3 bg-gray-100 overflow-hidden' : 'hidden'
-        }
+        className={imageId ? 'flex justify-center items-start mt-3 center mb-3 bg-gray-100 overflow-hidden' : 'hidden'}
       >
-        <img
-          style={{ height: '50vh' }}
-          src={imageId ? `${imageUrl}/${imageId}` : profilePlaceholder}
-          alt="post"
-          className="object-contain aspect-video"
-        />
+        <img src={imageId ? `${imageUrl}/${imageId}` : ''} alt="post" className="object-contain aspect-video" />
       </div>
 
       <div className="flex justify-between items-center">

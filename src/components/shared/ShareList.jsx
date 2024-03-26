@@ -8,6 +8,7 @@ import { friendService } from 'service';
 import useSocket from 'hooks/useSocket';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import Spinner from 'components/shared/Spinner';
+import ProfileImage from './ProfileImage';
 
 const ShareList = (props) => {
   const { onCloseClick } = props;
@@ -140,12 +141,8 @@ const UsersWithRadioButton = ({
       onClick={onUserClick}
       className="flex justify-start h-fit items-center w-full px-5 rounded-lg overflow-hidden cursor-pointer hover:bg-gray-100"
     >
-      <img
-        src={profileImageId ? `${imageUrl}/${profileImageId}` : profileDefault}
-        alt="profile"
-        className="w-circleImage h-circleImage rounded-full aspect-square object-cover bg-primaryColor"
-      />
-      <div className="text-gray-900 focus:outline-none w-full text-sm p-2.5">
+      <ProfileImage id={profileImageId} />
+      <div className="text-gray-900 focus:outline-none flex-1 text-sm p-2.5">
         <p className="font-medium overflow-ellipsis overflow-hidden w-40">{username}</p>
         <p className="font-thin text-xs overflow-ellipsis overflow-hidden w-40">{email}</p>
       </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import message from 'assets/icons/send.svg';
 import remove from 'assets/icons/user-remove.svg';
 import NoData from 'components/shared/NoData';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { friendService, toastService } from 'service';
 import { useDispatch, useSelector } from 'react-redux';
 import { decrementTotalFriendsCount, selectUserInfo } from './../redux/slices/userInfoSlice';
@@ -11,6 +11,7 @@ import { imageUrl } from 'global';
 import { user } from 'assets/icons';
 import { Pagination } from '@mui/material';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import ProfileImage from 'components/shared/ProfileImage';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
@@ -115,16 +116,13 @@ const Friend = (props) => {
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
-        <img
-          onClick={onUserClick}
-          src={profileImageId ? `${imageUrl}/${profileImageId}` : user}
-          alt={userId}
-          className="rounded-full h-circleImage w-circleImage aspect-square object-cover"
-        />
-        <div onClick={onUserClick} className=" text-gray-900 grow text-sm px-2.5 overflow-hidden">
+        <Link to={`/users/${userId}`} className="rounded-full h-circleImage w-circleImage">
+          <ProfileImage id={profileImageId} />
+        </Link>
+        <Link to={`/users/${userId}`} className=" text-gray-900 flex-1 text-sm px-2.5 overflow-hidden">
           <p className="font-medium overflow-ellipsis overflow-hidden ">{username ? username : 'username'}</p>
           <p className="font-thin text-xs overflow-ellipsis overflow-hidden">{email ? email : 'email'}</p>
-        </div>
+        </Link>
         {showMessageButtons && (
           <div className="flex gap-x-2">
             <div
