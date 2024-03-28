@@ -143,8 +143,8 @@ const UsersWithRadioButton = ({
     >
       <ProfileImage id={profileImageId} />
       <div className="text-gray-900 focus:outline-none flex-1 text-sm p-2.5">
-        <p className="font-medium overflow-ellipsis overflow-hidden w-40">{username}</p>
-        <p className="font-thin text-xs overflow-ellipsis overflow-hidden w-40">{email}</p>
+        <p className="font-medium line-clamp-1">{username}</p>
+        <p className="font-thin text-xs line-clamp-1">{email}</p>
       </div>
       <input
         ref={checkBoxRef}
@@ -154,6 +154,7 @@ const UsersWithRadioButton = ({
         className="size-5"
         type="checkbox"
         name="userlist"
+        onClick={onUserClick}
       />
     </div>
   );

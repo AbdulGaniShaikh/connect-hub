@@ -21,6 +21,21 @@ const ProfileImage = ({ id = '', height = 'circleImage', width = 'circleImage' }
         setLoading(false);
       }
     };
+    if (id === '') return;
+    fetchImage();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const res = await imageService.get(id);
+        setImage(res);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
     if (!isImageVisible) return;
     if (id === '') return;
     if (image !== null) return;
@@ -29,10 +44,10 @@ const ProfileImage = ({ id = '', height = 'circleImage', width = 'circleImage' }
   return (
     <div
       ref={imageRef}
-      className={`h-${height} w-${width} rounded-full overflow-hidden flex items-center justify-center`}
+      className={`h-${height} w-${width} aspect-square rounded-full overflow-hidden flex items-center justify-center`}
     >
       {loading && <Skeleton circle height={300} width={300} />}
-      {!loading && <img src={loading ? user : image} alt="" className="object-cover aspect-square" />}
+      {!loading && <img src={id ? image : user} alt="" className="object-cover aspect-square" />}
     </div>
   );
 };

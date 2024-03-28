@@ -31,7 +31,10 @@ const NewPost = () => {
     }
     setLoading(true);
     try {
-      const compressed = await imageCompressor(image, 0.6);
+      var compressed = null;
+      if (image) {
+        compressed = await imageCompressor(image, 0.6);
+      }
       const res = await postService.uploadNewPost(user.userId, compressed, val);
       if (res.status === HttpStatusCode.Ok) {
         toastService.success('Post uploaded successfully');

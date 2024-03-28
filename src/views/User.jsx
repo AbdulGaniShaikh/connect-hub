@@ -22,20 +22,20 @@ const User = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const fetch = async () => {
-    try {
-      var res = await userService.getUser(id);
-      setUser(res.data.payload);
-      setLoading(false);
-
-      var res2 = await userService.getMyRelation(userId, id);
-      setRelation(res2.data.payload.relation);
-      setFriendRequestId(res2.data.payload.friendRequestId);
-    } catch (error) {
-      defaultErrorBehavior(error);
-    }
-  };
   useEffect(() => {
+    const fetch = async () => {
+      try {
+        var res = await userService.getUser(id);
+        setUser(res.data.payload);
+        setLoading(false);
+
+        var res2 = await userService.getMyRelation(userId, id);
+        setRelation(res2.data.payload.relation);
+        setFriendRequestId(res2.data.payload.friendRequestId);
+      } catch (error) {
+        defaultErrorBehavior(error);
+      }
+    };
     if (!id) return;
     if (!userId) return;
     fetch();

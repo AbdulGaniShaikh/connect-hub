@@ -230,10 +230,12 @@ const ProfileChat = (props) => {
   return (
     <div className="grid gap-y-3 h-fit pr-5">
       <Link to={`/users/${userId}`} className="flex overflow-hidden items-center justify-center mr-5">
-        <ProfileImage id={profileImageId} />
-        <div className=" text-gray-900 text-sm px-2.5 overflow-hidden">
-          <p className="font-medium overflow-ellipsis overflow-hidden ">{username}</p>
-          <div className="text-xs overflow-ellipsis overflow-hidden">
+        <div to={`/users/${userId}`} className="h-circleImage w-circleImage">
+          <ProfileImage id={profileImageId} />
+        </div>
+        <div className="text-gray-900 text-sm px-2.5">
+          <p className="font-medium line-clamp-1">{username}</p>
+          <div className="text-xs line-clamp-1">
             {isActive && (
               <div className="flex justify-start gap-x-1 items-center">
                 <p className="rounded-full bg-green-500 p-1 h-2 w-2"></p>
