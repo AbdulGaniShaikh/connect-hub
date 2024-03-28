@@ -15,14 +15,18 @@ const UserPosts = ({ user = {} }) => {
 
   const defaultErrorBehavior = useErrorBehavior();
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (pageNumber) => {
     if (!user.userId) return;
     setLoading(true);
     try {
-      const res = await postService.getPostsOfUser(user.userId, page);
-      if (res.data.size > 0) {
-        setPosts([...posts, ...res.data.content]);
-        setPage(page + 1);
+      const res = await postService.getPostsOfUser(user.userId, pageNumber);
+      if (res.data.numberOfElements > 0) {
+        if (pageNumber === 0) {
+          setPosts(res.data.content);
+        } else {
+          setPosts([...posts, ...res.data.content]);
+        }
+        setPage(pageNumber + 1);
       }
     } catch (error) {
       defaultErrorBehavior(error);
@@ -32,12 +36,12 @@ const UserPosts = ({ user = {} }) => {
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(0);
   }, [user]);
 
   useEffect(() => {
     if (isVisible) {
-      fetchPosts();
+      fetchPosts(page);
     }
   }, [isVisible]);
   return (

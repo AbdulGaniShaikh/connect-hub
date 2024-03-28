@@ -40,6 +40,9 @@ export const messages = createSlice({
       } else {
         newInboxItem.unreadMessageCount = newInboxItem.unreadMessageCount + 1;
       }
+      if (newInboxItem.unreadMessageCount === 1) {
+        state.count = state.count + 1;
+      }
       state.inbox = [newInboxItem, ...newInbox];
     },
 
@@ -59,19 +62,14 @@ export const messages = createSlice({
       state.count = action.payload;
     },
     increaseCount: (state, action) => {
-      var containsEle = false;
       state.inbox.forEach((inboxItem) => {
         if (action.payload === inboxItem.userId && inboxItem.unreadMessageCount <= 0) {
-          state.count = Math.max(state.count + 1, 0);
-          containsEle = true;
+          if (inboxItem.unreadMessageCount === 1) {
+            state.count = Math.max(state.count + 1, 1);
+          }
           return;
         }
       });
-      //if dont find the inbox element in the array
-      //then also we will increase the unread message count
-      if (containsEle) {
-        state.count = Math.max(state.count + 1, 0);
-      }
     },
     descreaseCount: (state, action) => {
       state.inbox.forEach((inboxItem) => {

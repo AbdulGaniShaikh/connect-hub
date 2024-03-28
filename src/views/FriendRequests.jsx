@@ -118,12 +118,12 @@ const FriendRequest = (props) => {
   return (
     <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
-        <Link to={`/users/${userId}`} className="rounded-full h-circleImage w-circleImage">
+        <Link to={`/users/${userId}`}>
           <ProfileImage id={profileImageId} />
         </Link>
         <Link to={`/users/${userId}`} className=" text-gray-900 flex-1 text-sm px-2.5 overflow-hidden">
-          <p className="font-medium overflow-ellipsis overflow-hidden ">{username ? username : 'username'}</p>
-          <p className="font-thin text-xs overflow-ellipsis overflow-hidden">{email ? email : 'email'}</p>
+          <p className="font-medium line-clamp-1">{username}</p>
+          <p className="font-thin text-xs line-clamp-1">{email}</p>
         </Link>
         <div className="flex gap-x-2">
           <div

@@ -111,9 +111,9 @@ const InboxItem = (props) => {
         </div>
 
         <div className="text-gray-900 flex-1 text-sm px-2.5 ">
-          <p className="font-medium">{username}</p>
-          <div className={`text-xs ${unreadMessageCount > 0 && 'font-bold'}`}>
-            <p className="">{subtitle.length > 40 ? subtitle.substring(0, 40) + '...' : subtitle}</p>
+          <p className="font-medium line-clamp-1">{username}</p>
+          <div className={`text-xs line-clamp-1 ${unreadMessageCount > 0 && 'font-bold'}`}>
+            <p className="">{subtitle}</p>
           </div>
         </div>
         {unreadMessageCount > 0 && (

@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
-import profileDefault from 'assets/icons/user.svg';
 import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import { selectCount, setCount } from './../../../redux/slices/messageSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { imageUrl } from 'global';
 import { useEffect, useState } from 'react';
 import Model from 'components/shared/Model';
 import SettingsDialog from 'components/home/navbar/SettingsDialog';
@@ -43,7 +41,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex justify-self-end gap-x-10 items-center text-xl">
-          <Link to="/search">
+          <Link to="/search" className="max-sm:hidden">
             <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
 
@@ -62,7 +60,7 @@ const Navbar = () => {
           >
             <i className="fa-solid fa-gear cursor-pointer"></i>
           </div>
-          <Link to="/profile">
+          <Link to="/profile" className="max-sm:hidden">
             <ProfileImage id={user.profileImageId} key={1} />
           </Link>
         </div>

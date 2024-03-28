@@ -17,12 +17,15 @@ const useSocket = (userId) => {
     dispatch(addMessage(body));
 
     if (path !== `/inbox/${body.senderId}` && body.senderId !== senderId) {
-      dispatch(increaseCount(body.senderId));
+      // dispatch(increaseCount(body.senderId));
       dispatch(newMessage({ body, userId: senderId }));
     }
   };
 
   const connect = (userId) => {
+    if (stompClient && stompClient.connected) {
+      return;
+    }
     let Sock = new SockJS(`${backendUrl}/ws`);
     stompClient = over(Sock);
     senderId = userId;
