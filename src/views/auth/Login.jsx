@@ -6,7 +6,7 @@ import useIsLoggedIn from 'hooks/useIsLoggedIn';
 import { setUserInfo } from './../../redux/slices/userInfoSlice';
 import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';
-import SubmitButton from 'components/shared/SubmitButton';
+import SubmitButton from 'components/buttons/SubmitButton';
 import PasswordInput from 'components/shared/PasswordInput';
 import TextInput from 'components/shared/TextInput';
 import { isValidEmail } from 'utility/inputValidators';
@@ -70,7 +70,7 @@ const Login = () => {
     <div className="grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
       <div className="z-10 min-h-screen flex justify-center items-center mx-10">
-        <div className="grid grid-flow-row bg-white gap-3 p-10 shadow-lg rounded-3xl w-120 max-sm:w-full">
+        <div className="grid grid-flow-row bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl border border-lightHover dark:border-darkHover gap-3 p-10 shadow-lg w-120 max-sm:w-full">
           <div>
             <h1 className="font-medium text-4xl	">ConnectHub</h1>
             <p>Log in to your account.</p>

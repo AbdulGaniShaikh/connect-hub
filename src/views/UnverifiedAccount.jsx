@@ -8,6 +8,7 @@ import emailImg from 'assets/icons/email.svg';
 import Spinner from 'components/shared/Spinner';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import NegativeButton from 'components/buttons/NegativeButton';
 
 const UnverifiedAccount = () => {
   const [email, setEmail] = useState('');
@@ -67,15 +68,9 @@ const UnverifiedAccount = () => {
           </span>{' '}
           to resend the verification mail
         </p>
-
-        <button
-          type="button"
-          onClick={logout}
-          className="flex justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-        >
-          {loading && <Spinner />}
-          Logout
-        </button>
+        <div>
+          <NegativeButton text="Logout" onClick={logout} loading={loading} />
+        </div>
       </div>
     </div>
   );

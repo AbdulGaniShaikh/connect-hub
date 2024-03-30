@@ -6,15 +6,12 @@ const PasswordInput = ({ id = '', label = '', hint = '', val = '', onChange = ()
 
   return (
     <div>
-      <label
-        htmlFor={id}
-        className={`block mb-2 text-sm font-medium ${error.length > 0 ? 'text-red-700' : 'text-gray-900'}`}
-      >
+      <label htmlFor={id} className={`block mb-2 text-sm font-medium ${error.length > 0 ? 'text-red-700' : ' '}`}>
         {label}
       </label>
       <div
         htmlFor={id}
-        className="flex flex-row items-center border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 w-full hover:ring-4 ease-linear duration-200 overflow-hidden"
+        className="flex flex-row items-center border border-lightHover dark:border-darkHover  text-sm rounded-lg focus:ring-4 ring-lightHover dark:ring-darkHover w-full hover:ring-4 ease-linear duration-200 overflow-hidden"
       >
         <input
           type="password"
@@ -25,7 +22,8 @@ const PasswordInput = ({ id = '', label = '', hint = '', val = '', onChange = ()
             onChange(e.target.value);
           }}
           ref={input}
-          className="focus:border-transparent focus:outline-none h-full w-full p-4"
+          className="focus:border-transparent focus:outline-none bg-lightBg dark:bg-darkBg h-full w-full p-4"
+          autoComplete="off"
         />
 
         <i

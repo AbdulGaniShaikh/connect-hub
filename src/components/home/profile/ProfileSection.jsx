@@ -5,12 +5,15 @@ import { updateCoverImageId, updateProfileImageId } from './../../../redux/slice
 import { friendService, toastService, userService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { imageUrl } from 'global';
-import Spinner from 'components/shared/Spinner';
 import { verified } from 'assets/icons';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import imageCompressor from 'utility/imageCompressor';
 import ProfileImage from 'components/shared/ProfileImage';
+import Button from 'components/buttons/Button';
+import NegativeButton from 'components/buttons/NegativeButton';
+import NeutralButton from 'components/buttons/NeutralButton';
+import PositiveButton from 'components/buttons/PositiveButton';
 
 const ProfileSection = (props) => {
   const coverImgRef = useRef(null);
@@ -75,7 +78,7 @@ const ProfileSection = (props) => {
   };
 
   return (
-    <div className="rounded-3xl bg-white px-5 pb-5 flex flex-col gap-y-5">
+    <div className="rounded-3xl   px-5 pb-5 flex flex-col gap-y-5">
       {!isVisitingProfile && (
         <div>
           <input
@@ -225,14 +228,9 @@ const RelationNone = (props) => {
 
   return (
     <div className="flex gap-x-3 w-full sm:w-1/2 justify-end self-end ">
-      <button
-        onClick={addFriend}
-        className="flex justify-center items-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-1/2 px-5 py-2 text-center"
-      >
-        {loading && <Spinner />}
-        {!loading && <i className="fa-solid fa-user-plus mr-2"></i>}
-        Add Friend
-      </button>
+      <div className="w-1/2">
+        <Button onClick={addFriend} text="Add friend" loading={loading} icon="fa-solid fa-user-plus" />
+      </div>
     </div>
   );
 };
@@ -256,14 +254,8 @@ const RelationFRSent = (props) => {
   };
 
   return (
-    <div className="flex gap-x-3 w-full sm:w-1/2 justify-end self-end ">
-      <button
-        onClick={unsendRequest}
-        className="flex justify-center items-center text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-1/2 px-5 py-2 text-center"
-      >
-        {loading && <Spinner />}
-        Cancel request
-      </button>
+    <div className="flex gap-x-3 w-1/2 sm:w-1/4 justify-end self-end ">
+      <NegativeButton onClick={unsendRequest} loading={loading} text="Cancel request" />
     </div>
   );
 };
@@ -301,20 +293,8 @@ const RelationFRRecieved = (props) => {
 
   return (
     <div className="flex gap-x-3 w-full sm:w-1/2 self-end ">
-      <button
-        onClick={rejectClick}
-        className="flex justify-center items-center text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-      >
-        {rejectLoading && <Spinner />}
-        Reject
-      </button>
-      <button
-        onClick={acceptClick}
-        className="flex justify-center items-center text-white bg-green-500 hover:bg-green-600 focus:ring-4  ring-green-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-      >
-        {acceptLoading && <Spinner />}
-        Accept
-      </button>
+      <NegativeButton onClick={rejectClick} loading={rejectLoading} text="Reject" />
+      <PositiveButton onClick={acceptClick} loading={acceptLoading} text="Accept" />
     </div>
   );
 };
@@ -339,16 +319,12 @@ const RelationFriend = (props) => {
 
   return (
     <div className="flex gap-x-3 w-full sm:w-1/2 self-end ">
-      <button className="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4  ring-gray-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center">
-        <Link to={'/inbox/' + userId}>Message</Link>
-      </button>
-      <button
-        onClick={unfriend}
-        className="flex justify-center items-center text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-      >
-        {loading && <Spinner />}
-        Unfriend
-      </button>
+      <Link to={'/inbox/' + userId} className="w-full">
+        <NeutralButton text="Message" />
+      </Link>
+      <div className="w-full">
+        <NegativeButton onClick={unfriend} text="Unfriend" loading={loading} />
+      </div>
     </div>
   );
 };
@@ -358,16 +334,12 @@ const RelationSelf = () => {
 
   return (
     <div className="flex gap-x-3 w-full sm:w-1/2 self-end">
-      <button className="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4  ring-gray-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center">
-        <Link to="/saved">Saved Posts</Link>
-      </button>
-
-      <button
-        onClick={logout}
-        className="text-white bg-red-500 hover:bg-red-600 focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-      >
-        Logout
-      </button>
+      <Link to="/saved" className="w-full">
+        <NeutralButton text="Saved Posts" />
+      </Link>
+      <div className="w-full">
+        <NegativeButton onClick={logout} text="Logout" />
+      </div>
     </div>
   );
 };

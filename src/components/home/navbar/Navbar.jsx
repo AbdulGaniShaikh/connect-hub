@@ -8,6 +8,7 @@ import SettingsDialog from 'components/home/navbar/SettingsDialog';
 import chatService from 'service/chatService';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import ProfileImage from 'components/shared/ProfileImage';
+import DarkModeButton from './DarkModeButton';
 
 const Navbar = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -31,7 +32,7 @@ const Navbar = () => {
   }, [user.userId]);
 
   return (
-    <nav className="z-10 fixed top-0 left-0 bg-white w-full py-2.5 border-b-2 border-gray-200 xl:px-40">
+    <nav className="z-10 fixed h-14 top-0 left-0 bg-lightBg dark:bg-darkVariant w-full py-2.5 border-b dark:border-darkHover border-lightHover xl:px-40">
       <div className="px-5 grid grid-cols-2 max-sm:grid-cols-2 justify-between items-center ">
         <div className="flex items-center">
           <Link to="" className="flex items-center gap-3">
@@ -41,6 +42,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex justify-self-end gap-x-10 items-center text-xl">
+          <DarkModeButton />
           <Link to="/search" className="max-sm:hidden">
             <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
@@ -48,7 +50,7 @@ const Navbar = () => {
           <Link to="/inbox" className="relative">
             <i className="fa-regular fa-message"></i>
             {unreadCount > 0 && (
-              <p className="absolute -top-1 -right-2 text-center text-white p-px size-5 rounded-full bg-primaryColor text-xs">
+              <p className="absolute -top-1 -right-2 text-center   p-px size-5 rounded-full bg-primaryColor text-xs">
                 {unreadCount}
               </p>
             )}

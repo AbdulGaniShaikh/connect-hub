@@ -1,5 +1,4 @@
 import Comment from 'components/shared/Comment';
-import closeIcon from 'assets/icons/close.svg';
 import { useEffect, useState } from 'react';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
@@ -38,12 +37,11 @@ export default function Comments(props) {
   }, [postId]);
 
   return (
-    <div className="h-full bg-white rounded-3xl py-5 pl-5 overflow-hidden">
-      <div className="flex justify-between items-start mr-5">
+    <div className="h-full bg-lightBg dark:bg-darkBg rounded-3xl py-5 pl-5 overflow-hidden">
+      <div className="flex justify-between items-center mr-5">
         <h1 className="font-medium mb-3">Comments</h1>
-        <img src={closeIcon} alt="close" className="size-5 cursor-pointer" onClick={onCloseClick} />
+        <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>
       </div>
-      <hr className="mr-5" />
       <div className="h-full overflow-y-auto pb-5">
         {!loading && comments.length === 0 && <NoData message="No Comments yet." />}
         {!loading && comments.map((comment, id) => <Comment key={id} {...comment} />)}

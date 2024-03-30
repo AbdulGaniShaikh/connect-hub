@@ -76,8 +76,8 @@ const FriendRequests = () => {
   };
 
   return (
-    <div className="px-5 h-full w-full pb-5 grid grid-flow-row">
-      <div className="bg-white rounded-3xl h-full w-full p-5">
+    <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
+      <div>
         <p className="font-medium pb-2">Friend Request</p>
         {loading &&
           Array(5)
@@ -90,7 +90,7 @@ const FriendRequests = () => {
           })}
       </div>
       {!loading && friendRequests.length !== 0 && (
-        <div className="flex flex-col justify-center items-center pt-5">
+        <div className="flex flex-col justify-center items-center">
           <Pagination
             count={page.totalPages}
             variant="outlined"
@@ -116,12 +116,12 @@ const FriendRequest = (props) => {
     onAccept(friendRequestId, username);
   };
   return (
-    <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
+    <div className="w-full p-2 hover:bg-lightHover dark:hover:bg-darkHover cursor-pointer rounded-md">
       <div className="flex overflow-hidden items-center">
         <Link to={`/users/${userId}`}>
           <ProfileImage id={profileImageId} />
         </Link>
-        <Link to={`/users/${userId}`} className=" text-gray-900 flex-1 text-sm px-2.5 overflow-hidden">
+        <Link to={`/users/${userId}`} className=" flex-1 text-sm px-2.5 overflow-hidden">
           <p className="font-medium line-clamp-1">{username}</p>
           <p className="font-thin text-xs line-clamp-1">{email}</p>
         </Link>

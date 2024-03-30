@@ -164,11 +164,11 @@ const Post = (props) => {
   }, [postId, id]);
 
   return (
-    <div className="grid grid-flow-row bg-white p-4 rounded-3xl w-full">
+    <div className="grid grid-flow-row   p-5 w-full">
       <div className="flex justify-between items-center w-full">
         <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit">
           <ProfileImage id={profileImageId} />
-          <div className="text-gray-900 focus:outline-none flex-1 text-sm mx-2 ">
+          <div className=" focus:outline-none flex-1 text-sm mx-2 ">
             <p className="font-medium">{username ? username : 'username'}</p>{' '}
             <p className="text-xs font-thin">uploaded on {date}</p>
           </div>
@@ -200,25 +200,24 @@ const Post = (props) => {
       <div
         className={imageId ? 'flex justify-center items-start mt-3 center mb-3 bg-gray-100 overflow-hidden' : 'hidden'}
       >
-        <img src={imageId ? `${imageUrl}/${imageId}` : ''} alt="post" className="object-contain aspect-video" />
+        <img src={imageId ? `${imageUrl}/${imageId}` : ''} alt="post" className="object-contain w-full max-h-96" />
       </div>
 
       <div className="flex justify-between items-center">
-        <div className="flex justify-between items-center w-1/4">
+        <div className="flex justify-start items-center gap-7">
           <i className={isLiked ? likedStyle : unLikedStyle} onClick={onLikeClick}></i>
           <i onClick={onCommentClick} className="fa-regular fa-comment fa-lg cursor-pointer"></i>
-          <img onClick={onForwardClick} src={shareIcon} alt="share" className="size-5 cursor-pointer" />
+          <i onClick={onForwardClick} className="fa-regular fa-paper-plane text-[18px] cursor-pointer"></i>
         </div>
         <div>
           <i onClick={onSaveClick} className={isSave ? savedStyle : unSavedStyle}></i>
         </div>
       </div>
       <p className="text-sm py-2">{totalLikes} likes</p>
-      <p onClick={onCommentClick} className="text-gray-700 font-thin my-2 cursor-pointer w-fit ">
+      <p onClick={onCommentClick} className="font-thin my-2 cursor-pointer w-fit ">
         View all {totalComments !== 0 && totalComments} comments
       </p>
-      <hr className="h-px bg-gray-200 border-0" />
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center border-t dark:border-darkHover border-lightHover">
         <input
           alt="post-data"
           type="text"
@@ -229,7 +228,7 @@ const Post = (props) => {
           onChange={(e) => {
             setComment(e.target.value);
           }}
-          className="text-gray-900 focus:outline-none w-full text-sm font-medium py-2.5"
+          className="bg-lightBg dark:bg-darkBg focus:outline-none w-full text-sm font-medium py-2.5"
         ></input>
         {comment.trim().length > 0 && (
           <p onClick={postNewComment} className="text-primaryColor font-bold cursor-pointer">

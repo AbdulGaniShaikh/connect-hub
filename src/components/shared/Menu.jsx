@@ -21,7 +21,7 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
   return (
     <div className="relative select-none">
       <div
-        className="flex items-center justify-center cursor-pointer size-7 rounded-full hover:bg-gray-300 duration-300"
+        className="flex items-center justify-center cursor-pointer size-7 rounded-full hover:bg-lightHover dark:hover:bg-darkHover duration-300"
         onClick={() => {
           setVisible(!visible);
         }}
@@ -34,7 +34,7 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
           item && (
             <animated.div
               style={style}
-              className="absolute p-1 bg-white drop-shadow-xl z-10 rounded-md right-0 origin-top-right border overflow-hidden"
+              className="absolute p-1 bg-lightBg dark:bg-darkBg drop-shadow-xl z-10 rounded-md right-0 origin-top-right border dark:border-darkHover overflow-hidden"
             >
               {children.map((child, index) => (
                 <div key={index}>{child}</div>
@@ -60,7 +60,7 @@ const MenuItem = ({ value = '', icon = '', onClick = () => {} }) => {
   return (
     <div
       onClick={onClick}
-      className="flex flex-row justify-start items-center hover:bg-gray-100 px-4 py-2 rounded-sm cursor-pointer whitespace-nowrap"
+      className="flex flex-row justify-start items-center hover:bg-lightHover dark:hover:bg-darkHover px-4 py-2 rounded-sm cursor-pointer whitespace-nowrap"
     >
       {icon && <i className={icon + ' mr-2 fa-sm'}></i>}
       {value}

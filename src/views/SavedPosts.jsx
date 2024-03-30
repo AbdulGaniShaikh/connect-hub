@@ -35,7 +35,7 @@ const SavedPosts = () => {
   }, [userId, page]);
 
   return (
-    <div className="grid grid-flow-row gap-y-5 px-5 w-full pb-5">
+    <div className="grid grid-flow-row gap-y-5 w-full pb-5">
       {loading &&
         Array(2)
           .fill(1)
@@ -44,7 +44,7 @@ const SavedPosts = () => {
         <Post {...post} key={post.postId} />
       ))}
       {!loading && posts.length === 0 && (
-        <div className="grid grid-flow-row bg-white p-5 rounded-3xl">
+        <div className="grid grid-flow-row   p-5 ">
           <NoData message="Oops! It looks like haven't saved anything at the moment." />
         </div>
       )}

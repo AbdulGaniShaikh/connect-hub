@@ -66,7 +66,7 @@ const NotFound = ({ email }) => {
   return (
     <div className="flex flex-col gap-y-3 items-center justify-center">
       <div className="bg-green-500 rounded-full p-5">
-        <img src={close} alt="email" className="h-40 object-cover" />
+        <i className="fa-solid fa-close text-9xl"></i>
       </div>
       <h1 className="text-5xl">Verification Error!</h1>
       <p className="text-xl text-center">
@@ -94,7 +94,7 @@ const Unauthorized = ({ email }) => {
   return (
     <div className="flex flex-col gap-y-3 items-center justify-center">
       <div className="bg-green-500 rounded-full p-5">
-        <img src={close} alt="email" className="h-40 object-cover" />
+        <i className="fa-solid fa-close text-9xl"></i>
       </div>
       <h1 className="text-5xl">Verification Error!</h1>
       <p className="text-xl text-center">

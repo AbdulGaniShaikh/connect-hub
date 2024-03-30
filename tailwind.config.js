@@ -6,9 +6,20 @@ module.exports = {
       colors: {
         primaryColor: '#df6688',
         primaryColorDark: '#d14169',
-        backgroundLight: '#fffafa',
+        // primaryColor: '#66dfdf',
+        // primaryColorDark: '#3ddada',
         hoverGray: '#ffffff66',
-        chatRecieverColor: '#D9FDD3'
+        chatRecieverColor: '#D9FDD3',
+
+        lightBg: '#f8f8ff',
+        colorOnLight: '#333333',
+        lightHover: '#e5e5e5',
+
+        darkBg: '#0f0f0f',
+        colorOnDark: '#ffffff',
+        darkHover: '#272727',
+
+        darkVariant: '#1f2326'
       },
       width: {
         120: '27rem',
@@ -39,5 +50,6 @@ module.exports = {
       }
     }
   },
+  darkMode: 'class',
   plugins: []
 };

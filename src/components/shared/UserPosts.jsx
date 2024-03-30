@@ -20,14 +20,12 @@ const UserPosts = ({ user = {} }) => {
     setLoading(true);
     try {
       const res = await postService.getPostsOfUser(user.userId, pageNumber);
-      if (res.data.numberOfElements > 0) {
-        if (pageNumber === 0) {
-          setPosts(res.data.content);
-        } else {
-          setPosts([...posts, ...res.data.content]);
-        }
-        setPage(pageNumber + 1);
+      if (pageNumber === 0) {
+        setPosts(res.data.content);
+      } else {
+        setPosts([...posts, ...res.data.content]);
       }
+      setPage(pageNumber + 1);
     } catch (error) {
       defaultErrorBehavior(error);
     } finally {
@@ -51,7 +49,7 @@ const UserPosts = ({ user = {} }) => {
       ))}
       <div ref={endOfUserPosts}></div>
       {!loading && posts.length === 0 && (
-        <div className="bg-white rounded-3xl h-full w-full p-5">
+        <div className="   h-full w-full p-5">
           <NoData message={`${user.username} haven't posted anything`} />
         </div>
       )}

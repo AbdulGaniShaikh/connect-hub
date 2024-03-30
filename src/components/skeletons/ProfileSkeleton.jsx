@@ -4,7 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 const ProfileSkeleton = () => {
   return (
     <>
-      <div className="rounded-3xl bg-white p-5 flex flex-col gap-y-5">
+      <div className="rounded-3xl   p-5 flex flex-col gap-y-5">
         <div className="cover-photo relative inline-block h-52 w-full rounded-md">
           <Skeleton className="w-full h-full" />
         </div>
@@ -24,7 +24,7 @@ const ProfileSkeleton = () => {
         <Skeleton height={100} />
       </div>
 
-      <div className="rounded-3xl bg-white p-5">
+      <div className="rounded-3xl   p-5">
         <Skeleton width={100} />
         <Skeleton count={2} />
       </div>

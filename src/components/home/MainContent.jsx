@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { postService } from 'service';
 import NoData from 'components/shared/NoData';
 import { useIsVisible } from 'hooks/useIsVisible';
+import Skeleton from 'react-loading-skeleton';
 
 const MainContent = () => {
   const [posts, setPosts] = useState([]);
@@ -50,9 +51,7 @@ const MainContent = () => {
   }, [isVisible]);
 
   return (
-    <div className="grid grid-flow-row gap-y-5 px-5 w-full pb-5">
-      <NewPost />
-
+    <div className="grid grid-flow-row w-full">
       {posts.map((post, i) => (
         <Post {...post} key={i} />
       ))}
@@ -62,7 +61,7 @@ const MainContent = () => {
           .fill(1)
           .map((_, i) => <PostSkeleton key={i} />)}
       {!loading && posts.length === 0 && (
-        <div className="grid grid-flow-row bg-white p-4 rounded-3xl">
+        <div className="grid grid-flow-row   p-4 ">
           <NoData message="Oops! It looks like your feed is empty at the moment." />
         </div>
       )}
