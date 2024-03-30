@@ -11,6 +11,8 @@ import Spinner from 'components/shared/Spinner';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import imageCompressor from 'utility/imageCompressor';
 import ProfileImage from 'components/shared/ProfileImage';
+import Divider from 'components/shared/Divider';
+import Button from 'components/buttons/Button';
 
 const NewPost = () => {
   const user = useSelector(selectUserInfo);
@@ -78,7 +80,7 @@ const NewPost = () => {
     textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px';
   }, [val]);
   return (
-    <div className="grid grid-flow-row bg-white p-4 rounded-3xl">
+    <div className="grid grid-flow-row p-5 gap-y-3">
       <input
         ref={fileInputRef}
         accept="image/*"
@@ -91,10 +93,8 @@ const NewPost = () => {
       <div className="text-sm font-medium">
         <p>Post something</p>
       </div>
-      <hr className="h-px my-2.5 bg-gray-200 border-0 dark:bg-gray-200" />
       <div className="flex justify-start items-start w-full ">
         <ProfileImage id={user.profileImageId} key={1} />
-
         <textarea
           alt="post-data"
           type="text"
@@ -103,11 +103,11 @@ const NewPost = () => {
           value={val}
           onChange={onChange}
           placeholder="What's on you mind?"
-          className="text-gray-900 min-h-10 focus:outline-none flex-1 text-sm mx-2 p-2.5 resize-none"
+          className="bg-lightBg dark:bg-darkBg focus:outline-none flex-1 text-sm mx-2 p-2.5 resize-none"
           ref={textAreaRef}
         ></textarea>
         <div className="active:scale-95 ease-in-out duration-150 flex justify-center items-center size-10 cursor-pointer">
-          <img src={gallery} alt="upload" onClick={onUploadImageClick} />
+          <i className="fa-regular fa-image fa-lg" onClick={onUploadImageClick}></i>
         </div>
       </div>
       <div
@@ -122,14 +122,7 @@ const NewPost = () => {
         />
         <img src={imageToDisplay} alt="" style={{ height: '50vh' }} className="m-auto object-cover" />
       </div>
-      <button
-        type="submit"
-        className="flex items-center justify-center text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium mt-2 rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center"
-        onClick={uploadNewPost}
-      >
-        {loading && <Spinner />}
-        Post
-      </button>
+      <Button onClick={uploadNewPost} loading={loading} text="Post" />
     </div>
   );
 };

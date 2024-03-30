@@ -42,7 +42,7 @@ const User = () => {
   }, [id, userId]);
 
   return (
-    <div className="px-5 w-full pb-5 grid grid-flow-row gap-y-5">
+    <div className="w-full grid grid-flow-row gap-y-5">
       {loading && <ProfileSkeleton />}
       <ProfileSection
         isVisitingProfile={true}

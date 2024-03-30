@@ -12,6 +12,7 @@ import userIcon from 'assets/icons/user.svg';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import Linkify from 'components/shared/Linkify';
 import ProfileImage from 'components/shared/ProfileImage';
+import Divider from 'components/shared/Divider';
 
 const Chat = () => {
   const { id } = useParams();
@@ -102,10 +103,6 @@ const Chat = () => {
   }, [userId, id]);
 
   useEffect(() => {
-    messageEnd.current.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  useEffect(() => {
     if (!id) return;
     dispatch(descreaseCount(id));
   }, [inbox]);
@@ -127,7 +124,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex w-full mx-5 mb-5 rounded-3xl flex-col h-chat bg-white  py-2 pl-5 overflow-hidden">
+    <div className="flex w-full flex-col h-chat py-2 pl-5 overflow-hidden">
       <ProfileChat {...user} />
       <div className="grid grow overflow-y-scroll pt-2 pr-5">
         <div ref={messageStart} id="chat-top"></div>
@@ -159,7 +156,7 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="flex justify-center items-start flex-row mr-5 mb-3 gap-x-1">
+      <div className="flex justify-center items-end flex-row pr-5 gap-x-1">
         <div className="absolute">
           <div
             onClick={() => {
@@ -169,7 +166,7 @@ const Chat = () => {
             className="relative inline-block bottom-0 duration-300 ease-in-out cursor-pointer"
           >
             <div className="flex bg-chatRecieverColor size-10 items-center justify-center rounded-full">
-              <i className="fa-solid fa-arrow-down"></i>
+              <i className="fa-solid fa-arrow-down text-colorOnLight"></i>
             </div>
           </div>
         </div>
@@ -189,14 +186,12 @@ const Chat = () => {
           }}
           placeholder="type your message here"
           style={{ zIndex: '1' }}
-          className="bg-gray-100 text-gray-900 focus:outline-none w-full text-sm p-2.5 resize-none"
+          className="focus:outline-none rounded-md w-full text-sm p-2.5 resize-none bg-lightHover dark:bg-darkHover"
           ref={textAreaRef}
         ></textarea>
-        {val.trim().length > 0 && (
-          <p onClick={() => sendMessage()} className="text-primaryColor font-bold cursor-pointer p-2.5">
-            Send
-          </p>
-        )}
+        <div onClick={() => sendMessage()} className="pl-2.5 py-3">
+          <i className="fa-regular fa-paper-plane fa-lg cursor-pointer"></i>
+        </div>
       </div>
     </div>
   );
@@ -233,8 +228,8 @@ const ProfileChat = (props) => {
         <div to={`/users/${userId}`} className="h-circleImage w-circleImage">
           <ProfileImage id={profileImageId} />
         </div>
-        <div className="text-gray-900 text-sm px-2.5">
-          <p className="font-medium line-clamp-1">{username}</p>
+        <div className="px-2.5">
+          <p className="font-bold line-clamp-1">{username}</p>
           <div className="text-xs line-clamp-1">
             {isActive && (
               <div className="flex justify-start gap-x-1 items-center">
@@ -246,19 +241,19 @@ const ProfileChat = (props) => {
           </div>
         </div>
       </Link>
-      <hr />
+      <Divider />
     </div>
   );
 };
 
 const DateBreaker = ({ date }) => {
   return (
-    <div className="grid grid-cols-5 items-center ">
-      <hr className="grow h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-      <hr className="grow h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
+    <div className="grid my-8 grid-cols-5 items-center">
+      <Divider className="grow" />
+      <Divider className="grow" />
       <p className="grow-0 justify-self-center text-xs">{date}</p>
-      <hr className="grow h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
-      <hr className="grow h-px my-8 bg-gray-200 border-0 dark:bg-gray-200" />
+      <Divider className="grow" />
+      <Divider className="grow" />
     </div>
   );
 };
@@ -268,6 +263,7 @@ const Message = (props) => {
   var chatAlignLeft = senderId !== userId;
   var bgColor = chatAlignLeft ? 'bg-gray-100' : 'bg-chatRecieverColor';
   var textColor = chatAlignLeft ? 'text-black' : 'text-black';
+  // var textColor = chatAlignLeft ? '' : '';
 
   const options = {
     hour: '2-digit',
@@ -320,25 +316,23 @@ const PostMessage = ({ postId }) => {
   return (
     <Link
       to={`/posts/${postId}`}
-      target="_blank"
-      className="flex flex-col w-80 rounded-3xl overflow-hidden border bg-white"
+      className="flex flex-col w-80 rounded-2xl border-lightHover dark:border-darkHover overflow-hidden border  "
     >
-      <div className="grid bg-gray-50">
+      <div className="grid bg-lightHover dark:bg-darkHover ">
         <Link to={`/users/${post.userId}`} target="_blank" className="flex items-center justify-start p-3">
           <ProfileImage id={post.profileImageId} />
-          <div className=" text-gray-900 text-sm px-2.5 overflow-hidden">
+          <div className="text-sm px-2.5 overflow-hidden">
             <p className="font-medium overflow-ellipsis overflow-hidden ">{post.username}</p>
           </div>
         </Link>
-        <hr />
       </div>
       {post.text && <div className="p-3">{post.text}</div>}
       {post.imageId && (
-        <div className="flex mx-3 mt-2 justify-center items-start  center rounded-md mb-3 bg-gray-100 overflow-hidden">
+        <div className="flex justify-center items-start center bg-gray-100 overflow-hidden">
           <img
             src={post.imageId ? `${imageUrl}/${post.imageId}` : userIcon}
             alt="post"
-            className="object-contain aspect-video"
+            className="object-cover w-full max-h-80"
           />
         </div>
       )}

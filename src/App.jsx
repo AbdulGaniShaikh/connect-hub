@@ -52,7 +52,7 @@ const App = () => {
   // }
 
   return (
-    <div className="">
+    <div>
       <SkeletonTheme>
         <ToastContainer />
         <BrowserRouter>

@@ -46,8 +46,8 @@ const Inbox = () => {
   }, [userId]);
 
   return (
-    <div className="px-5 w-full pb-5 grid grid-flow-row gap-y-5">
-      <div className="h-full w-full rounded-3xl p-5 bg-white">
+    <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
+      <div>
         <p className="font-medium pb-2">Messages</p>
         {loading &&
           Array(5)
@@ -99,7 +99,7 @@ const InboxItem = (props) => {
   }, [lastSeen]);
 
   return (
-    <div className="w-full p-2 hover:bg-gray-100 *:cursor-pointer rounded-md">
+    <div className="w-full p-2 hover:bg-lightHover dark:hover:bg-darkHover cursor-pointer rounded-md">
       <Link to={`/inbox/${userId}`} className="flex overflow-hidden items-center">
         <div
           className={`${
@@ -110,16 +110,14 @@ const InboxItem = (props) => {
           {isActive && <p className="absolute h-3 w-3 rounded-full bg-green-500 -right-px -bottom-px"></p>}
         </div>
 
-        <div className="text-gray-900 flex-1 text-sm px-2.5 ">
+        <div className="flex-1 text-sm px-2.5 ">
           <p className="font-medium line-clamp-1">{username}</p>
           <div className={`text-xs line-clamp-1 ${unreadMessageCount > 0 && 'font-bold'}`}>
             <p className="">{subtitle}</p>
           </div>
         </div>
         {unreadMessageCount > 0 && (
-          <p className="text-center text-white p-px size-5 rounded-full bg-primaryColor text-xs">
-            {unreadMessageCount}
-          </p>
+          <p className="text-center   p-px size-5 rounded-full bg-primaryColor text-xs">{unreadMessageCount}</p>
         )}
       </Link>
     </div>

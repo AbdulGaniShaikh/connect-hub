@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { updateDescription } from './../../../redux/slices/userInfoSlice';
 import { toastService, userService } from 'service';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import Button from 'components/buttons/Button';
+import NeutralButton from 'components/buttons/NeutralButton';
 
 const DescriptionSection = (props) => {
   const { isVisitingProfile, user } = props;
@@ -59,7 +61,7 @@ const DescriptionSection = (props) => {
   }, [user]);
 
   return (
-    <div className="rounded-3xl bg-white p-5">
+    <div className="rounded-3xl   p-5">
       <p onClick={onEditClick} className="font-bold hover:cursor-pointer select-none inline">
         About me &nbsp; {!isVisitingProfile && <i className="fa-regular fa-edit"></i>}
       </p>
@@ -75,23 +77,16 @@ const DescriptionSection = (props) => {
             value={editDesp}
             onChange={onChange}
             placeholder="Description"
-            className="text-gray-900 min-h-10 focus:outline-none w-full resize-none"
+            className="bg-lightBg dark:bg-darkBg min-h-10 focus:outline-none w-full resize-none"
           ></textarea>
           <div className="flex gap-x-3 w-1/2 self-end">
-            <button
+            <NeutralButton
               onClick={() => {
                 setIsDespEdtVisible(false);
               }}
-              className="text-gray-900 bg-gray-100 hover:bg-gray-200 focus:ring-4  ring-gray-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onUpdateClick}
-              className="text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2 text-center"
-            >
-              Save
-            </button>
+              text="Cancel"
+            />
+            <Button onClick={onUpdateClick} text="Save" />
           </div>
         </div>
       )}

@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import closeIcon from 'assets/icons/close.svg';
-import profileDefault from 'assets/icons/user.svg';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
-import { imageUrl } from 'global';
 import { friendService } from 'service';
 import useSocket from 'hooks/useSocket';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import Spinner from 'components/shared/Spinner';
 import ProfileImage from './ProfileImage';
+import Button from 'components/buttons/Button';
 
 const ShareList = (props) => {
   const { onCloseClick } = props;
@@ -67,13 +65,12 @@ const ShareList = (props) => {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-3xl py-5 pl-5 overflow-hidden">
+    <div className="flex flex-col h-full rounded-3xl py-5 pl-5 overflow-hidden bg-lightBg dark:bg-darkBg ">
       <div className="grid gap-y-3 h-fit pr-5">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <h1 className="font-medium">Share</h1>
-          <img src={closeIcon} alt="close" className="size-5 cursor-pointer" onClick={onCloseClick} />
+          <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>
         </div>
-        <hr />
       </div>
       <div className="flex flex-col h-full overflow-y-scroll">
         {!loading && friends.length === 0 && <NoData message="You don't have any friends." />}
@@ -104,13 +101,7 @@ const ShareList = (props) => {
       </div>
       {checked.length > 0 && (
         <div className="mr-5 pt-5">
-          <button
-            type="submit"
-            className="text-white bg-primaryColor hover:bg-primaryColorDark focus:ring-4  ring-red-100 focus:outline-none hover:ring-4 ease-linear duration-200 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center "
-            onClick={onSendClick}
-          >
-            Send
-          </button>
+          <Button onClick={onSendClick} text="Send" />
         </div>
       )}
     </div>
@@ -139,10 +130,10 @@ const UsersWithRadioButton = ({
   return (
     <div
       onClick={onUserClick}
-      className="flex justify-start h-fit items-center w-full px-5 rounded-lg overflow-hidden cursor-pointer hover:bg-gray-100"
+      className="flex justify-start h-fit items-center w-full px-5 rounded-lg overflow-hidden cursor-pointer hover:bg-lightHover dark:hover:bg-darkHover"
     >
       <ProfileImage id={profileImageId} />
-      <div className="text-gray-900 focus:outline-none flex-1 text-sm p-2.5">
+      <div className="focus:outline-none flex-1 text-sm p-2.5">
         <p className="font-medium line-clamp-1">{username}</p>
         <p className="font-thin text-xs line-clamp-1">{email}</p>
       </div>

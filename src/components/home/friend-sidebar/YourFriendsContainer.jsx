@@ -7,6 +7,7 @@ import { selectUserInfo } from './../../../redux/slices/userInfoSlice';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { HttpStatusCode } from 'axios';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import Divider from 'components/shared/Divider';
 
 const YourFriendsContainer = () => {
   const [friendsList, setFriendList] = useState([]);
@@ -39,7 +40,7 @@ const YourFriendsContainer = () => {
   }, [userId]);
 
   return (
-    <div className="grid gap-y-3 flow-row bg-white rounded-3xl p-5">
+    <div className="grid gap-y-3 flow-row p-5">
       <h1 className="font-medium">Your friends</h1>
       <div className="grid flow-row ">
         {friendsList.map((friend) => (
@@ -53,7 +54,6 @@ const YourFriendsContainer = () => {
         )}
         {!loading && friendsList.length === 0 && <div className="text-sm">You don't have any friends</div>}
       </div>
-      <hr />
       <p onClick={onViewAllFriendsClick} className="place-self-center text-primaryColor font-medium cursor-pointer">
         View all friends
       </p>

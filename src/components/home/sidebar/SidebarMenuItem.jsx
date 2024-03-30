@@ -4,7 +4,7 @@ const SidebarMenuItem = (props) => {
   const { text, icon, to } = props;
   return (
     <Link to={to}>
-      <div className="flex items-center p-2.5 rounded-tl-lg rounded-bl-lg hover:bg-gray-100">
+      <div className="flex items-center p-2.5 rounded-tl-lg rounded-bl-lg hover:bg-lightHover dark:hover:bg-darkHover">
         <img src={icon} alt="" className="size-5 mr-3" />
         {text}
       </div>

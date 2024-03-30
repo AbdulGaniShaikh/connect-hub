@@ -7,6 +7,7 @@ import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { useEffect, useState } from 'react';
 import { friendService } from 'service';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import Divider from 'components/shared/Divider';
 
 const FriendRequests = () => {
   const friendReqs = useSelector(selectRequests);
@@ -39,7 +40,7 @@ const FriendRequests = () => {
 
   return (
     <div>
-      <div className="grid gap-y-3 flow-row bg-white rounded-3xl p-5">
+      <div className="grid gap-y-3 flow-row    p-5">
         <p className="font-medium">Friend Requests</p>
         <div className="w-full">
           {friendReqs.map((req) => <SingleFriendRequest loggedInId={userId} key={req.userId} {...req} />).slice(0, 2)}
@@ -51,7 +52,6 @@ const FriendRequests = () => {
           )}
           {!loading && friendReqs.length === 0 && <div className="text-sm">You have no friend request</div>}
         </div>
-        <hr />
         <p onClick={onViewAllFRClick} className="place-self-center text-primaryColor font-medium cursor-pointer">
           View all requests
         </p>

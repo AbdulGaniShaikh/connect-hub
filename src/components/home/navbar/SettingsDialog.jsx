@@ -1,19 +1,16 @@
-import { close } from 'assets/icons';
 import { Link } from 'react-router-dom';
 import SettingsItem from 'components/home/navbar/SettingsItem';
 import useLogout from 'hooks/useLogout';
 
 const SettingsDialog = ({ onCloseClick = () => {}, userId = '' }) => {
-  // const { onCloseClick } = props;
   const [logout] = useLogout();
   return (
-    <div className="flex flex-col bg-white rounded-3xl p-5 overflow-hidden">
+    <div className="flex flex-col bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl p-5 overflow-hidden">
       <div className="grid gap-y-3 h-fit">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <h1 className="font-medium justify-self-center">Settings</h1>
-          <img src={close} alt="close" className="size-5 cursor-pointer" onClick={onCloseClick} />
+          <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>
         </div>
-        <hr />
       </div>
       <div className="flex flex-col">
         <Link to="/inbox">

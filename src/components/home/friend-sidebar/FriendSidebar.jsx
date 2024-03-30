@@ -4,9 +4,8 @@ import YourFriendsContainer from 'components/home/friend-sidebar/YourFriendsCont
 const FriendSidebar = (props) => {
   const { className } = props;
   return (
-    <div className={'fixed w-64 ' + className}>
+    <div className={`fixed flex flex-col h-screen w-64 gap-y-5  ${className}`}>
       <FriendRequests />
-      <div className="mt-5"></div>
       <YourFriendsContainer />
     </div>
   );

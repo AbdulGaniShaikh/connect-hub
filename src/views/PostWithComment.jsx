@@ -24,7 +24,7 @@ const PostWithComment = () => {
   }, [postId]);
 
   return (
-    <div className="px-5 w-full">
+    <div className="w-full">
       <Post {...post} />
     </div>
   );

@@ -8,14 +8,12 @@ class LRUCache {
 
   get(key) {
     if (!this.cache.has(key)) {
-      console.log('Miss');
       return false;
     }
 
     const v = this.cache.get(key);
     this.cache.delete(key);
     this.cache.set(key, v);
-    console.log('Hit');
     return this.cache.get(key);
   }
 

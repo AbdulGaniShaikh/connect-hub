@@ -1,5 +1,4 @@
 import { Pagination } from '@mui/material';
-import { HttpStatusCode } from 'axios';
 import UserProfileRectangle from 'components/home/friend-sidebar/UserProfileRectangle';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
@@ -71,9 +70,9 @@ const Search = () => {
   };
 
   return (
-    <div className="w-full mx-5">
-      <div className="grid grid-flow-row gap-3 w-full p-5 rounded-3xl overflow-hidden bg-white">
-        <div className="flex items-center px-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-4 ring-red-100 focus:border-transparent focus:outline-none hover:ring-4 ease-linear duration-200">
+    <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
+      <div>
+        <div className="flex items-center px-3 border border-lightHover dark:border-darkHover  text-sm rounded-lg focus:ring-4 ring-lightHover dark:ring-darkHover focus:border-transparent focus:outline-none hover:ring-4 ease-linear duration-200">
           <input
             alt="search"
             type="text"
@@ -83,7 +82,7 @@ const Search = () => {
             autoComplete="off"
             value={search}
             onChange={onChange}
-            className="px-3 py-2.5 focus:outline-none w-full"
+            className="px-3 py-2.5 focus:outline-none w-full bg-lightBg dark:bg-darkBg"
             onKeyUp={onKeyUp}
           />
           <i className="fa-solid fa-magnifying-glass cursor-pointer"></i>
@@ -95,15 +94,15 @@ const Search = () => {
             Array(5)
               .fill(1)
               .map((_, i) => <UserCardSkeleton key={i} />)}
-          {!loading && searchRes.length === 0 && (
-            <div className="grid grid-flow-row bg-white p-4 rounded-3xl">
-              <NoData message="Oops! No results found. Try a different search term." />
-            </div>
-          )}
         </div>
       </div>
+      {!loading && searchRes.length === 0 && (
+        <div className="grid grid-flow-row   p-4 ">
+          <NoData message="Oops! No results found. Try a different search term." />
+        </div>
+      )}
       {!loading && searchRes.length !== 0 && (
-        <div className="z-20 flex flex-col justify-center items-center mt-5">
+        <div className="z-20 flex flex-col justify-center items-center">
           <Pagination
             count={page.totalPages}
             variant="outlined"
