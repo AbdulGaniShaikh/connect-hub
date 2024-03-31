@@ -2,16 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { incrementTotalPostsCount, selectUserInfo } from './../../redux/slices/userInfoSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import close from 'assets/icons/close.svg';
-import gallery from 'assets/icons/image.svg';
-import { imageUrl } from 'global';
-import profileDefault from 'assets/icons/user.svg';
 import { postService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
-import Spinner from 'components/shared/Spinner';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import imageCompressor from 'utility/imageCompressor';
 import ProfileImage from 'components/shared/ProfileImage';
-import Divider from 'components/shared/Divider';
 import Button from 'components/buttons/Button';
 
 const NewPost = () => {

@@ -5,7 +5,6 @@ import { updateCoverImageId, updateProfileImageId } from './../../../redux/slice
 import { friendService, toastService, userService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { imageUrl } from 'global';
-import { verified } from 'assets/icons';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import imageCompressor from 'utility/imageCompressor';
@@ -147,7 +146,8 @@ const ProfileSection = (props) => {
 
         <div className="flex flex-col items-center justify-center">
           <p className="text-xl tooltip-container font-medium tooltip inline-block relative">
-            {user.username} {user.verified && <img src={verified} alt="" className="size-5 aspect-square inline" />}
+            {user.username}{' '}
+            {user.verified && <i className="fa-solid fa-certificate text-blue-500 text-sm text-center"></i>}
             <span className="text-gray-50 tooltip invisible px-2 py-1 rounded-md absolute bottom-full left-1/2 text-xs bg-black select-none">
               {user.verified ? 'Verified' : 'Unverified'}
             </span>
