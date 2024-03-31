@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Comments from 'components/shared/Comments';
-import shareIcon from 'assets/icons/send.svg';
 import { Link } from 'react-router-dom';
 import ShareList from 'components/shared/ShareList';
 import { clientUrl, imageUrl } from 'global';

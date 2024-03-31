@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { check, user } from 'assets/icons';
-import { imageUrl } from 'global';
+import { check } from 'assets/icons';
 import { friendService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';
@@ -35,11 +34,8 @@ const SingleFriendRequest = (props) => {
           <p className="font-medium line-clamp-1">{username}</p>
           <p className="font-thin text-xs line-clamp-1">{email}</p>
         </Link>
-        <div
-          onClick={acceptRequest}
-          className="flex-none flex justify-center items-center p-1 rounded-md bg-green-400 hover:bg-green-500"
-        >
-          <img src={check} alt="" className="size-5 " />
+        <div className="flex-none flex justify-center items-center p-1 rounded-md bg-green-400 hover:bg-green-500">
+          <i onClick={acceptRequest} className="fa-solid fa-check text-xl size-5 text-center"></i>
         </div>
       </div>
     </div>

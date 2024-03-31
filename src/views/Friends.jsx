@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import remove from 'assets/icons/user-remove.svg';
 import NoData from 'components/shared/NoData';
 import { Link, useParams } from 'react-router-dom';
 import { friendService, toastService } from 'service';
@@ -115,7 +114,7 @@ const Friend = (props) => {
           <p className="font-thin text-xs line-clamp-1">{email}</p>
         </Link>
         {showMessageButtons && (
-          <div className="flex gap-x-2">
+          <div className="flex gap-x-2 items-center justify-center">
             <Link to={`/inbox/${userId}`}>
               <i className="fa-regular fa-message fa-lg p-1 rounded-md"></i>
             </Link>
@@ -123,7 +122,7 @@ const Friend = (props) => {
               onClick={onUnfriendClick}
               className="flex-none flex justify-center items-center p-1 rounded-md bg-red-400 hover:bg-red-500"
             >
-              <img src={remove} alt="" className="size-5 " />
+              <i className="fa-solid fa-xmark text-xl size-5 text-center"></i>
             </div>
           </div>
         )}

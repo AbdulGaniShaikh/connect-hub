@@ -40,7 +40,7 @@ const Search = () => {
     const getData = setTimeout(() => {
       setPage({ ...page, pageNumber: 1 });
       fetchSearchResults();
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(getData);
   }, [search]);
@@ -71,14 +71,14 @@ const Search = () => {
 
   return (
     <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
-      <div>
+      <div className="flex gap-y-3 flex-col">
         <div className="flex items-center px-3 border border-lightHover dark:border-darkHover  text-sm rounded-lg focus:ring-4 ring-lightHover dark:ring-darkHover focus:border-transparent focus:outline-none hover:ring-4 ease-linear duration-200">
           <input
             alt="search"
             type="text"
             name="search"
             id="search"
-            placeholder="Search---->Press 'Enter' to get results."
+            placeholder="Search ----> Press 'Enter' to get results."
             autoComplete="off"
             value={search}
             onChange={onChange}
@@ -97,7 +97,7 @@ const Search = () => {
         </div>
       </div>
       {!loading && searchRes.length === 0 && (
-        <div className="grid grid-flow-row   p-4 ">
+        <div className="grid grid-flow-row p-4 ">
           <NoData message="Oops! No results found. Try a different search term." />
         </div>
       )}

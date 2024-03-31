@@ -130,13 +130,13 @@ const FriendRequest = (props) => {
             onClick={onDeclineClick}
             className="flex-none flex justify-center items-center p-1 rounded-md bg-red-400 hover:bg-red-500"
           >
-            <img src={decline} alt="" className="size-5 " />
+            <i className="fa-solid fa-xmark text-xl size-5 text-center"></i>
           </div>
           <div
             onClick={onAcceptClick}
             className="flex-none flex justify-center items-center p-1 rounded-md bg-green-400 hover:bg-green-500"
           >
-            <img src={accept} alt="" className="size-5" />
+            <i className="fa-solid fa-check text-xl size-5 text-center"></i>
           </div>
         </div>
       </div>
