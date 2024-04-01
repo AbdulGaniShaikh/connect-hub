@@ -43,6 +43,14 @@ input:-webkit-autofill:active {
   --highlight-color: #4a4747;
 }
 
+:is(.dark) .MuiOutlinedInput-notchedOutline {
+  border-color: rgb(255 255 255 / 49%);
+}
+
+:is(.dark) .MuiOutlinedInput-root {
+  color: rgb(255 255 255 / 87%);
+}
+
 .show-when-hover {
   display: none !important;
 }

@@ -1,15 +1,13 @@
 import Post from 'components/shared/Post';
-import NewPost from 'components/home/NewPost';
 import { useEffect, useRef, useState } from 'react';
 import PostSkeleton from 'components/skeletons/PostSkeleton';
-import { selectUserInfo } from './../../redux/slices/userInfoSlice';
+import { selectUserInfo } from '../../redux/slices/userInfoSlice';
 import { useSelector } from 'react-redux';
 import { postService } from 'service';
 import NoData from 'components/shared/NoData';
 import { useIsVisible } from 'hooks/useIsVisible';
-import Skeleton from 'react-loading-skeleton';
 
-const MainContent = () => {
+const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
@@ -69,4 +67,4 @@ const MainContent = () => {
   );
 };
 
-export default MainContent;
+export default Home;

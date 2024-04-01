@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { authService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
-import useIsLoggedIn from 'hooks/useIsLoggedIn';
 import SubmitButton from 'components/buttons/SubmitButton';
 import StrongPasswordInput from 'components/shared/StrongPasswordInput';
 import TextInput from 'components/shared/TextInput';
@@ -23,7 +22,6 @@ const SignUp = () => {
   const [passwordError, setPasswordError] = useState('');
   const [repeatPasswordError, setRepeatPasswordError] = useState('');
 
-  useIsLoggedIn();
   const onClick = async (setLoading) => {
     try {
       var v1, v2, v3, v4;
@@ -143,7 +141,7 @@ const SignUp = () => {
           />
           <div className="flex py-2.5 mt-2.5 text-sm">
             <p>Already have an account?</p>
-            <Link to="/login">
+            <Link to="/auth/login">
               <p className="text-primaryColor">&nbsp;Sign In.</p>
             </Link>
           </div>
