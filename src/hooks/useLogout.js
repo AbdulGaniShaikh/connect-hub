@@ -6,7 +6,7 @@ const useLogout = () => {
   const logout = async () => {
     try {
       await authService.logout();
-      navigate('/login');
+      navigate('/auth/login');
     } catch (error) {
       if (!error.response) {
         toastService.error('Server is not up. Try again later');

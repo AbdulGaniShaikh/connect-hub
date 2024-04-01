@@ -42,7 +42,6 @@ const isUserLoggedIn = () => {
 };
 
 const logout = () => {
-  localStorage.clear();
   return axios.post(authUrls.logout, null, { withCredentials: true });
 };
 

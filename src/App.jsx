@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from 'views/auth/Login';
 import SignUp from 'views/auth/SignUp';
-import Home from 'views/Home';
-import MainContent from 'components/home/MainContent';
+import ProtectedRoutes from 'views/ProtectedRoutes';
+import Home from 'components/home/Home';
 import Profile from 'components/home/profile/Profile';
 import Friends from 'views/Friends';
 import User from 'views/User';
@@ -23,66 +23,72 @@ import NotFound from 'views/NotFound';
 import PostWithComment from 'views/PostWithComment';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectServerStatus, setStatus } from './redux/slices/serverStatus';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { userService } from 'service';
 import ServerDown from 'views/ServerDown';
+import PageLoading from 'components/shared/PageLoading';
+import PublicRoutes from 'views/PublicRoutes';
 
 const App = () => {
   const dispatch = useDispatch();
   const serverStatus = useSelector(selectServerStatus);
+  const [pageLoading, setPageLoading] = useState(true);
 
-  const fetchServerStatus = async () => {
-    try {
-      const res = await userService.fetchServerStatus();
-      dispatch(setStatus(res.data));
-    } catch (error) {
-      const res = error.response;
-      if (!res) {
-        dispatch(setStatus('DOWN'));
-        return;
-      }
-    }
-  };
   useEffect(() => {
+    const fetchServerStatus = async () => {
+      try {
+        setPageLoading(true);
+        const res = await userService.fetchServerStatus();
+        dispatch(setStatus(res.data));
+      } catch (error) {
+        const res = error.response;
+        if (!res) {
+          dispatch(setStatus('DOWN'));
+          return;
+        }
+      } finally {
+        setPageLoading(false);
+      }
+    };
     fetchServerStatus();
   }, []);
-
-  // if (serverStatus !== 'RUNNING') {
-  //   return <div>Server not running</div>;
-  // }
 
   return (
     <div>
       <SkeletonTheme>
         <ToastContainer />
-        <BrowserRouter>
-          <Routes>
-            {serverStatus !== 'RUNNING' && <Route path="*" element={<ServerDown />} />}
-            {serverStatus === 'RUNNING' && (
-              <>
-                <Route path="/login" element={<Login />} />
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/verify-account/:email" element={<VerifyAccount />} />
-                <Route path="/unverified-account" element={<UnverifiedAccount />} />
-                <Route path="" element={<Home />}>
-                  <Route path="" element={<MainContent />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="/users/:id/friends" element={<Friends />} />
-                  <Route path="friend-requests" element={<FriendRequests />} />
-                  <Route path="/users/:id" element={<User />} />
-                  <Route path="/inbox" element={<Inbox />} />
-                  <Route path="/inbox/:id" element={<Chat />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/saved" element={<SavedPosts />} />
-                  <Route path="/change-password" element={<ChangePassword />} />
-                  <Route path="/posts/:postId" element={<PostWithComment />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </>
-            )}
-          </Routes>
-        </BrowserRouter>
+        <PageLoading loading={pageLoading}>
+          <BrowserRouter>
+            <Routes>
+              {serverStatus !== 'RUNNING' && <Route path="*" element={<ServerDown />} />}
+              {serverStatus === 'RUNNING' && (
+                <>
+                  <Route path="auth" element={<PublicRoutes />}>
+                    <Route path="login" element={<Login />} />
+                    <Route path="sign-up" element={<SignUp />} />
+                  </Route>
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="verify-account/:email" element={<VerifyAccount />} />
+                  <Route path="" element={<ProtectedRoutes />}>
+                    <Route path="" element={<Home />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="/users/:id/friends" element={<Friends />} />
+                    <Route path="friend-requests" element={<FriendRequests />} />
+                    <Route path="/users/:id" element={<User />} />
+                    <Route path="/inbox" element={<Inbox />} />
+                    <Route path="/inbox/:id" element={<Chat />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/saved" element={<SavedPosts />} />
+                    <Route path="/change-password" element={<ChangePassword />} />
+                    <Route path="/posts/:postId" element={<PostWithComment />} />
+                    <Route path="unverified-account" element={<UnverifiedAccount />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </>
+              )}
+            </Routes>
+          </BrowserRouter>
+        </PageLoading>
       </SkeletonTheme>
     </div>
   );

@@ -3,7 +3,6 @@ import StrongPasswordInput from 'components/shared/StrongPasswordInput';
 import SubmitButton from 'components/buttons/SubmitButton';
 import TextInput from 'components/shared/TextInput';
 import useErrorBehavior from 'hooks/useErrorBehavior';
-import useIsLoggedIn from 'hooks/useIsLoggedIn';
 import { MuiOtpInput } from 'mui-one-time-password-input';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,8 +22,6 @@ const ForgotPassword = () => {
 
   const navigate = useNavigate();
   const defaultErrorBehavior = useErrorBehavior();
-
-  useIsLoggedIn();
 
   const onClick = (setLoadingContinue) => {
     if (otpSent) {
@@ -56,7 +53,7 @@ const ForgotPassword = () => {
       setLoadingContinue(true);
       await authService.resetPassword(email, hash, otp);
       toastService.success('Password was reset. Login with your new password to access your account.');
-      navigate('/login');
+      navigate('/auth/login');
     } catch (error) {
       defaultErrorBehavior(error);
     } finally {
@@ -74,8 +71,10 @@ const ForgotPassword = () => {
       setLoadingContinue(true);
       await authService.sendOtpToResetPassword(email);
       setOtpSent(true);
+      toastService.success('OTP was sent. Please check your email');
     } catch (error) {
       defaultErrorBehavior(error);
+      toastService.success('Error sending OTP');
     } finally {
       setLoadingContinue(false);
     }
@@ -155,7 +154,7 @@ const ForgotPassword = () => {
               <p
                 className="text-primaryColor text-sm place-self-end cursor-pointer"
                 onClick={() => {
-                  sendOtpToResetPassword(email);
+                  sendOtpToResetPassword(email, () => {});
                 }}
               >
                 Resend OTP

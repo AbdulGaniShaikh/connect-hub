@@ -1,0 +1,29 @@
+.loader {
+  border: 4px solid;
+  border-radius: 50%;
+  border-color: #000 transparent;
+}
+
+:is(.dark) .loader {
+  border-color: #fff transparent;
+}
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+.counter-spin {
+  animation: counter-spin 2s linear infinite;
+  border-radius: 50%;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes counter-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}

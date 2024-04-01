@@ -2,7 +2,7 @@ import { HttpStatusCode } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { authService, toastService } from 'service';
-import { check, close } from 'assets/icons';
+import { check } from 'assets/icons';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const VerifyAccount = () => {
@@ -53,7 +53,7 @@ const Success = ({ email }) => {
       <h1 className="text-5xl">Email is Verified!!</h1>
       <p className="text-xl text-center">
         Your email <b>{email}</b> has been successfully verified. <br /> You can now go back to the{' '}
-        <Link to={'/login'} className="text-primaryColor">
+        <Link to={'/auth/login'} className="text-primaryColor">
           Login
         </Link>{' '}
         page to access the platfrom
@@ -72,7 +72,7 @@ const NotFound = ({ email }) => {
       <p className="text-xl text-center">
         Your email <b> {email} </b> cannot be verified. <br />
         Either the email provided doesn't exists or token is wrong. Please check the token or go to{' '}
-        <Link to={'/sign-up'} className="text-primaryColor">
+        <Link to={'/auth/sign-up'} className="text-primaryColor">
           Sign Up
         </Link>{' '}
         page to create new account.

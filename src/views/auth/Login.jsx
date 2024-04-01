@@ -2,7 +2,6 @@ import Waves from 'assets/side-wave.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { authService, toastService } from 'service';
-import useIsLoggedIn from 'hooks/useIsLoggedIn';
 import { setUserInfo } from './../../redux/slices/userInfoSlice';
 import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';
@@ -21,8 +20,6 @@ const Login = () => {
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-
-  useIsLoggedIn();
 
   const onClick = async (setLoading) => {
     try {
@@ -114,7 +111,7 @@ const Login = () => {
           </div>
           <div className="flex text-sm">
             <p>Don't have an account?</p>
-            <Link to="/sign-up">
+            <Link to="/auth/sign-up">
               <p className="text-primaryColor">&nbsp;Create one.</p>
             </Link>
           </div>
