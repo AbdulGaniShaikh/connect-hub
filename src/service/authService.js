@@ -52,6 +52,9 @@ const verifyEmail = (email, token) => {
 const resendVerificationLink = (email) => {
   return axios.post(`${authUrl}resend-verification-email/${email}`);
 };
+const consumeRefreshToken = () => {
+  return axios.get(`${authUrl}refresh-token`, { withCredentials: true });
+};
 
 const authService = {
   login,
@@ -61,7 +64,8 @@ const authService = {
   resetPassword,
   isUserLoggedIn,
   verifyEmail,
-  resendVerificationLink
+  resendVerificationLink,
+  consumeRefreshToken
 };
 
 export default authService;

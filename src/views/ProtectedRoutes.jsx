@@ -5,9 +5,11 @@ import { Outlet } from 'react-router-dom';
 import BottomNavigation from 'components/shared/BottomNavigation';
 import useUser from 'hooks/useUser';
 import PageLoading from 'components/shared/PageLoading';
+import useRefreshToken from 'hooks/useRefreshToken';
 
 const ProtectedRoutes = () => {
   const [loading] = useUser();
+  useRefreshToken();
   return (
     <PageLoading loading={loading}>
       <div className="overflow-hidden">
