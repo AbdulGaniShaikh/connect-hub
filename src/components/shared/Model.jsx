@@ -38,9 +38,9 @@ const Model = ({ children, onClose, show = false }) => {
           item && (
             <animated.div
               style={style}
-              className="fixed p-10 h-full max-md:w-full max-md:left-0 max-xl:w-1/2 max-xl:left-1/4 ease-in-out duration-75 w-1/3 top-0 left-1/3"
+              className="fixed sm:p-5 h-full max-md:w-full max-md:left-0 max-xl:w-1/2 max-xl:left-1/4 ease-in-out duration-75 w-1/3 top-0 left-1/3"
             >
-              {children}
+              <div className="flex items-center max-sm:items-end w-full h-full">{children}</div>
             </animated.div>
           )
         );

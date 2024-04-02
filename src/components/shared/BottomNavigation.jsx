@@ -24,7 +24,7 @@ const BottomNavigation = () => {
   const { profileImageId } = useSelector(selectUserInfo);
 
   return (
-    <div className="fixed bottom-0 bg-lightHover dark:bg-darkHover h-16 w-full z-10">
+    <div style={{ zIndex: '1' }} className="fixed bottom-0 bg-lightHover dark:bg-darkHover h-16 w-full">
       <div className="flex flex-row items-center justify-evenly h-full w-full">
         {iconList.map((item, i) => (
           <BottomNavigationIcon {...item} key={i} />
