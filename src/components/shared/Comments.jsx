@@ -37,7 +37,7 @@ export default function Comments(props) {
   }, [postId]);
 
   return (
-    <div className="h-full bg-lightBg dark:bg-darkBg rounded-3xl py-5 pl-5 overflow-hidden">
+    <div className="w-full bg-lightBg dark:bg-darkBg rounded-t-3xl sm:rounded-3xl py-5 pl-5 overflow-hidden">
       <div className="flex justify-between items-center mr-5">
         <h1 className="font-medium mb-3">Comments</h1>
         <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>

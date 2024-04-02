@@ -5,7 +5,7 @@ import useLogout from 'hooks/useLogout';
 const SettingsDialog = ({ onCloseClick = () => {}, userId = '' }) => {
   const [logout] = useLogout();
   return (
-    <div className="flex flex-col bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl p-5 overflow-hidden">
+    <div className="flex flex-col bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-t-3xl sm:rounded-3xl p-5 overflow-hidden w-full">
       <div className="grid gap-y-3 h-fit">
         <div className="flex justify-between items-center">
           <h1 className="font-medium justify-self-center">Settings</h1>

@@ -26,7 +26,7 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
           setVisible(!visible);
         }}
       >
-        <i className="fa-solid fa-ellipsis-vertical "></i>
+        <i className="fa-solid fa-ellipsis-vertical"></i>
       </div>
 
       {transition((style, item) => {
@@ -34,7 +34,7 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
           item && (
             <animated.div
               style={style}
-              className="absolute p-1 bg-lightBg dark:bg-darkBg drop-shadow-xl z-10 rounded-md right-0 origin-top-right border dark:border-darkHover overflow-hidden"
+              className="absolute p-1 bg-lightBg dark:bg-darkBg drop-shadow-xl rounded-md right-0 origin-top-right border dark:border-darkHover overflow-hidden"
             >
               {children.map((child, index) => (
                 <div key={index}>{child}</div>
