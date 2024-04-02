@@ -2,9 +2,11 @@ import Comment from 'components/shared/Comment';
 import { useEffect, useState } from 'react';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
-import { postService } from 'service';
+import { postService, toastService } from 'service';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import Spinner from 'components/shared/Spinner';
+import { useSelector } from 'react-redux';
+import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 
 export default function Comments(props) {
   const { onCloseClick, postId } = props;
@@ -13,6 +15,17 @@ export default function Comments(props) {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [page, setPage] = useState(0);
   const defaultErrorBehavior = useErrorBehavior();
+  const [comment, setComment] = useState('');
+  const { userId, profileImageId, username } = useSelector(selectUserInfo);
+  const postNewComment = async () => {
+    try {
+      await postService.postComment(postId, comment, userId);
+      setComments([{ userId, profileImageId, username, comment, date: new Date() }, ...comments]);
+      setComment('');
+    } catch (error) {
+      defaultErrorBehavior(error);
+    }
+  };
 
   const fetchComments = async () => {
     try {
@@ -23,7 +36,6 @@ export default function Comments(props) {
         setComments([...comments, ...res.data.content]);
         setPage(page + 1);
       }
-      // setComments(res.data.content);
     } catch (error) {
       defaultErrorBehavior(error);
     } finally {
@@ -37,12 +49,12 @@ export default function Comments(props) {
   }, [postId]);
 
   return (
-    <div className="w-full bg-lightBg dark:bg-darkBg rounded-t-3xl sm:rounded-3xl py-5 pl-5 overflow-hidden">
+    <div className="flex flex-col w-full max-h-full bg-lightBg dark:bg-darkBg rounded-t-3xl sm:rounded-3xl py-5 pl-5 overflow-hidden">
       <div className="flex justify-between items-center mr-5">
         <h1 className="font-medium mb-3">Comments</h1>
         <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>
       </div>
-      <div className="h-full overflow-y-auto pb-5">
+      <div className="flex-1 overflow-y-auto pb-5">
         {!loading && comments.length === 0 && <NoData message="No Comments yet." />}
         {!loading && comments.map((comment, id) => <Comment key={id} {...comment} />)}
         {loading &&
@@ -59,6 +71,25 @@ export default function Comments(props) {
             {fetchLoading && <Spinner color="text-blue-400" />}
             Load more
           </div>
+        )}
+      </div>
+      <div className="flex justify-between items-center border-t dark:border-darkHover border-lightHover mr-5">
+        <input
+          alt="post-data"
+          type="text"
+          name="comment"
+          placeholder="Add a comment"
+          autoComplete="off"
+          value={comment}
+          onChange={(e) => {
+            setComment(e.target.value);
+          }}
+          className="bg-lightBg dark:bg-darkBg focus:outline-none w-full text-sm font-medium py-2.5"
+        ></input>
+        {comment.trim().length > 0 && (
+          <p onClick={postNewComment} className="text-primaryColor font-bold cursor-pointer">
+            Post
+          </p>
         )}
       </div>
     </div>

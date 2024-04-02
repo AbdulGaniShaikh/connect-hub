@@ -65,14 +65,14 @@ const ShareList = (props) => {
   }, []);
 
   return (
-    <div className="flex flex-col bg-lightBg dark:bg-darkBg rounded-t-3xl sm:rounded-3xl w-full py-5 overflow-hidden gap-y-3">
+    <div className="flex max-h-full flex-col bg-lightBg dark:bg-darkBg rounded-t-3xl sm:rounded-3xl w-full py-5 overflow-hidden gap-y-3">
       <div className="grid gap-y-3 h-fit px-5">
         <div className="flex justify-between items-center">
           <h1 className="font-medium">Share</h1>
           <i className="fa-solid fa-close fa-lg cursor-pointer" onClick={onCloseClick}></i>
         </div>
       </div>
-      <div className="flex flex-col h-full overflow-y-scroll">
+      <div className="flex-1 overflow-y-scroll">
         {!loading && friends.length === 0 && <NoData message="You don't have any friends." />}
         {!loading &&
           friends.map((user, id) => (
