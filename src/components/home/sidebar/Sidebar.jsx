@@ -13,8 +13,8 @@ const Sidebar = (props) => {
           <ProfileImage id={user.profileImageId} height="full" width="full" />
         </Link>
         <Link to="/profile">
-          <p className="font-medium text-md">{user.username ? user.username : ''}</p>
-          <p className="text-sm">{user.email ? user.email : ''}</p>
+          <p className="font-medium text-md line-clamp-1">{user.username}</p>
+          <p className="text-sm line-clamp-1">{user.email}</p>
         </Link>
         <div>
           <p className="font-medium text-md">Total Friends</p>

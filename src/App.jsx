@@ -81,8 +81,8 @@ const App = () => {
                     <Route path="/saved" element={<SavedPosts />} />
                     <Route path="/change-password" element={<ChangePassword />} />
                     <Route path="/posts/:postId" element={<PostWithComment />} />
-                    <Route path="unverified-account" element={<UnverifiedAccount />} />
                   </Route>
+                  <Route path="unverified-account" element={<UnverifiedAccount />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}

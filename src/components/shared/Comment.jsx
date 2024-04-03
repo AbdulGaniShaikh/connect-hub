@@ -17,16 +17,18 @@ const Comment = (props) => {
     datePosted = 'now';
   }
   return (
-    <Link to={`/users/${userId}`} className="flex justify-start items-start w-fit my-2 pr-5">
-      <ProfileImage id={profileImageId} />
-      <div className=" focus:outline-none flex-1 text-sm mx-2 ">
-        <p className="inline">
+    <div className="flex justify-start items-start w-fit my-2 pr-5">
+      <Link to={`/users/${userId}`}>
+        <ProfileImage id={profileImageId} />
+      </Link>
+      <div className="focus:outline-none flex-1 text-sm mx-2 ">
+        <Link to={`/users/${userId}`} className="inline">
           <span className="font-medium cursor-pointer">{username} </span>
           <span className="text-xs">at {datePosted}</span>
-        </p>
+        </Link>
         <p className="">{comment}</p>
       </div>
-    </Link>
+    </div>
   );
 };
 

@@ -7,11 +7,13 @@ import { selectUserInfo } from './../redux/slices/userInfoSlice';
 import { userService } from 'service';
 import { Pagination } from '@mui/material';
 import useErrorBehavior from 'hooks/useErrorBehavior';
+import BackButton from 'components/buttons/BackButton';
 
 const SavedPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
+  const [pageFlag, setPageFlag] = useState(false);
   const { userId } = useSelector(selectUserInfo);
   const defaultErrorBehavior = useErrorBehavior();
 
@@ -32,10 +34,14 @@ const SavedPosts = () => {
   useEffect(() => {
     if (!userId) return;
     fetchSavedPost();
-  }, [userId, page]);
+  }, [userId, pageFlag]);
 
   return (
-    <div className="grid grid-flow-row gap-y-5 w-full pb-5">
+    <div className="w-full pb-5">
+      <div className="font-medium px-5 pt-5">
+        <BackButton />
+        Saved Posts
+      </div>
       {loading &&
         Array(2)
           .fill(1)
@@ -44,7 +50,7 @@ const SavedPosts = () => {
         <Post {...post} key={post.postId} />
       ))}
       {!loading && posts.length === 0 && (
-        <div className="grid grid-flow-row   p-5 ">
+        <div className="p-5">
           <NoData message="Oops! It looks like haven't saved anything at the moment." />
         </div>
       )}
@@ -58,6 +64,7 @@ const SavedPosts = () => {
             page={page.pageNumber}
             onChange={(_, i) => {
               setPage({ ...page, pageNumber: i });
+              setPageFlag(!pageFlag);
             }}
           />
         </div>

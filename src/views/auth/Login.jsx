@@ -66,8 +66,8 @@ const Login = () => {
   return (
     <div className="grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
-      <div className="z-10 min-h-screen flex justify-center items-center mx-10">
-        <div className="grid grid-flow-row bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl border border-lightHover dark:border-darkHover gap-3 p-10 shadow-lg w-120 max-sm:w-full">
+      <div className="z-10 min-h-screen flex justify-center items-center sm:mx-10">
+        <div className="grid grid-flow-row bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark sm:rounded-3xl border border-lightHover dark:border-darkHover gap-3 p-10 shadow-lg w-120 max-sm:w-full">
           <div>
             <h1 className="font-medium text-4xl	">ConnectHub</h1>
             <p>Log in to your account.</p>

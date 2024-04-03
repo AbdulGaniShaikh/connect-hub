@@ -1,11 +1,7 @@
-import accept from 'assets/icons/check.svg';
-import decline from 'assets/icons/close.svg';
 import NoData from 'components/shared/NoData';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeRequest } from './../redux/slices/friendRequestsSlice';
-import { imageUrl } from 'global';
-import { user } from 'assets/icons';
 import { useEffect, useState } from 'react';
 import { friendService, toastService } from 'service';
 import {
@@ -18,11 +14,13 @@ import { HttpStatusCode } from 'axios';
 import { Pagination } from '@mui/material';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import ProfileImage from 'components/shared/ProfileImage';
+import BackButton from 'components/buttons/BackButton';
 
 const FriendRequests = () => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
+  const [pageFlag, setPageFlag] = useState(false);
   const dispatch = useDispatch();
   const { userId } = useSelector(selectUserInfo);
   const defaultErrorBehavior = useErrorBehavior();
@@ -33,7 +31,6 @@ const FriendRequests = () => {
       if (res.status === HttpStatusCode.Ok) {
         toastService.success(`Rejected ${username}'s friend request`);
         dispatch(removeRequest(friendRequestId));
-        dispatch(decrementTotalFriendsCount());
         setFriendRequests(friendRequests.filter((request) => friendRequestId !== request.friendRequestId));
         fetchFriendRequest();
       }
@@ -60,7 +57,7 @@ const FriendRequests = () => {
     if (!userId) return;
     setLoading(true);
     fetchFriendRequest();
-  }, [userId, page]);
+  }, [userId, pageFlag]);
 
   const fetchFriendRequest = async () => {
     try {
@@ -78,7 +75,10 @@ const FriendRequests = () => {
   return (
     <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
       <div>
-        <p className="font-medium pb-2">Friend Request</p>
+        <div className="font-medium pb-2">
+          <BackButton />
+          Friend Request
+        </div>
         {loading &&
           Array(5)
             .fill(1)
@@ -99,6 +99,7 @@ const FriendRequests = () => {
             page={page.pageNumber}
             onChange={(_, i) => {
               setPage({ ...page, pageNumber: i });
+              setPageFlag(!pageFlag);
             }}
           />
         </div>

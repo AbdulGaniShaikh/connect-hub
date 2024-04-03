@@ -1,5 +1,5 @@
 import { useTransition, animated } from '@react-spring/web';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const Menu = ({ children = [], cancelItem = 'false' }) => {
   const [visible, setVisible] = useState(false);
@@ -18,8 +18,21 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
       opacity: 0
     }
   });
+
+  const newRef = useRef(null);
+  const handleOutsideClick = (e) => {
+    if (newRef.current && !newRef.current.contains(e.target)) {
+      setVisible(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  });
   return (
-    <div className="relative select-none">
+    <div ref={newRef} className="relative select-none">
       <div
         className="flex items-center justify-center cursor-pointer size-7 rounded-full hover:bg-lightHover dark:hover:bg-darkHover duration-300"
         onClick={() => {
@@ -37,7 +50,14 @@ const Menu = ({ children = [], cancelItem = 'false' }) => {
               className="absolute p-1 bg-lightBg dark:bg-darkBg drop-shadow-xl rounded-md right-0 origin-top-right border dark:border-darkHover overflow-hidden"
             >
               {children.map((child, index) => (
-                <div key={index}>{child}</div>
+                <div
+                  onClick={() => {
+                    setVisible(false);
+                  }}
+                  key={index}
+                >
+                  {child}
+                </div>
               ))}
               {cancelItem && (
                 <MenuItem

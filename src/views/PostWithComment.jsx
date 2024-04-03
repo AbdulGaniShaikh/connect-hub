@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { postService } from 'service';
 import Post from 'components/shared/Post';
+import BackButton from 'components/buttons/BackButton';
 
 const PostWithComment = () => {
   const { postId } = useParams();
@@ -25,6 +26,10 @@ const PostWithComment = () => {
 
   return (
     <div className="w-full">
+      <div className="pl-3 mt-3 text-[#acacac]">
+        <BackButton />
+        Go back
+      </div>
       <Post {...post} />
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom/dist';
+import { Link, useNavigate, useParams } from 'react-router-dom/dist';
 import chatService from 'service/chatService';
 import { postService, toastService, userService } from 'service';
 import { imageUrl } from 'global';
@@ -71,18 +71,17 @@ const Chat = () => {
   }, [isVisible]);
 
   useEffect(() => {
-    if (!isEndVisible) {
-      goToBottom.current.classList.remove('bottom-0');
-      goToBottom.current.classList.add('bottom-12');
-    } else {
-      goToBottom.current.classList.remove('bottom-12');
+    if (isEndVisible) {
+      goToBottom.current.classList.remove('bottom-20');
       goToBottom.current.classList.add('bottom-0');
+    } else {
+      goToBottom.current.classList.remove('bottom-0');
+      goToBottom.current.classList.add('bottom-20');
     }
-  });
+  }, [isEndVisible]);
 
   useEffect(() => {
     setPage(0);
-
     return () => {
       clearMessages();
     };
@@ -99,13 +98,16 @@ const Chat = () => {
     setPage(0);
     fetchUserData();
     fetchMessages();
-    messageEnd.current.scrollIntoView({ behavior: 'smooth' });
   }, [userId, id]);
 
   useEffect(() => {
     if (!id) return;
     dispatch(descreaseCount(id));
   }, [inbox]);
+
+  useEffect(() => {
+    messageEnd.current.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const fetchMessages = async (pageNumber = 0) => {
     try {
@@ -124,11 +126,13 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex w-full flex-col h-chat py-2 pl-5 overflow-hidden">
-      <ProfileChat {...user} />
-      <div className="grid grow overflow-y-scroll pt-2 pr-5">
-        <div ref={messageStart} id="chat-top"></div>
+    <div className="flex flex-col fixed bottom-16 md:bottom-0 top-14 right-0 left-0 md:left-64 md:ml-5 lg:mr-5 lg:right-64 xl:mx-40 bg-lightBg dark:bg-darkBg">
+      <div className="">
+        <ProfileChat {...user} />
+      </div>
+      <div className="flex flex-col flex-1 h-full w-full overflow-y-scroll px-3">
         <div>
+          <div ref={messageStart} className="h-2 w-full"></div>
           {messages.map((message, i) => {
             const options = {
               day: '2-digit',
@@ -152,11 +156,11 @@ const Chat = () => {
             }
             return <Message key={i} {...message} userId={userId} />;
           })}
-          <div ref={messageEnd} id="chat-bottom" className="h-2"></div>
+          <div ref={messageEnd} className="h-2 w-full"></div>
         </div>
       </div>
 
-      <div className="flex justify-center items-end flex-row pr-5 gap-x-1">
+      <div className="flex justify-center items-end flex-row p-3 gap-x-1 bg-lightBg dark:bg-darkBg">
         <div className="absolute">
           <div
             onClick={() => {
@@ -201,6 +205,7 @@ const ProfileChat = (props) => {
   const { userId, username, profileImageId, lastSeen, email } = props;
   const [isActive, setIsActive] = useState(false);
   const [lastSeenText, setLastSeenText] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     var last = new Date(lastSeen);
@@ -223,7 +228,15 @@ const ProfileChat = (props) => {
     }
   }, [lastSeen]);
   return (
-    <div className="grid gap-y-3 h-fit pr-5">
+    <div className="relative grid gap-y-3 h-fit pt-3">
+      <div
+        onClick={() => {
+          navigate(-1);
+        }}
+        className="absolute flex items-center justify-center left-0 bottom-0 top-0 p-3 pl-5 cursor-pointer"
+      >
+        <i className="fa-solid fa-arrow-left fa-lg"></i>
+      </div>
       <Link to={`/users/${userId}`} className="flex overflow-hidden items-center justify-center mr-5">
         <div to={`/users/${userId}`} className="h-circleImage w-circleImage">
           <ProfileImage id={profileImageId} />
@@ -263,7 +276,6 @@ const Message = (props) => {
   var chatAlignLeft = senderId !== userId;
   var bgColor = chatAlignLeft ? 'bg-gray-100' : 'bg-chatRecieverColor';
   var textColor = chatAlignLeft ? 'text-black' : 'text-black';
-  // var textColor = chatAlignLeft ? '' : '';
 
   const options = {
     hour: '2-digit',
@@ -316,23 +328,23 @@ const PostMessage = ({ postId }) => {
   return (
     <Link
       to={`/posts/${postId}`}
-      className="flex flex-col w-80 rounded-2xl border-lightHover dark:border-darkHover overflow-hidden border  "
+      className="flex flex-col w-64 rounded-2xl border-lightHover dark:border-darkHover overflow-hidden border  "
     >
       <div className="grid bg-lightHover dark:bg-darkHover ">
-        <Link to={`/users/${post.userId}`} target="_blank" className="flex items-center justify-start p-3">
+        <Link to={`/users/${post.userId}`} className="flex items-center justify-start p-3">
           <ProfileImage id={post.profileImageId} />
-          <div className="text-sm px-2.5 overflow-hidden">
+          <div className="text-sm px-2.5 overflow-hidden line-clamp-1">
             <p className="font-medium overflow-ellipsis overflow-hidden ">{post.username}</p>
           </div>
         </Link>
       </div>
       {post.text && <div className="p-3">{post.text}</div>}
       {post.imageId && (
-        <div className="flex justify-center items-start center bg-gray-100 overflow-hidden">
+        <div className="flex max-h-64 justify-center items-start center bg-gray-100 overflow-hidden">
           <img
             src={post.imageId ? `${imageUrl}/${post.imageId}` : userIcon}
             alt="post"
-            className="object-cover w-full max-h-80"
+            className="object-center w-full"
           />
         </div>
       )}

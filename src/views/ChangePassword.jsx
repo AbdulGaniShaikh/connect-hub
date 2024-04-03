@@ -8,6 +8,7 @@ import SubmitButton from 'components/buttons/SubmitButton';
 import PasswordInput from 'components/shared/PasswordInput';
 import StrongPasswordInput from 'components/shared/StrongPasswordInput';
 import hashPassword from 'utility/hashPassword';
+import BackButton from 'components/buttons/BackButton';
 
 const ChangePassword = () => {
   const defaultErrorBehavior = useErrorBehavior();
@@ -50,8 +51,10 @@ const ChangePassword = () => {
   return (
     <div className="flex flex-col h-full w-full  p-5   gap-y-5">
       <div>
-        <h1 className="font-medium text-2xl	">Change Password</h1>
-        <p>Log in to your account.</p>
+        <h1 className="font-medium">
+          <BackButton />
+          Change Password
+        </h1>
       </div>
 
       <PasswordInput

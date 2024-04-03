@@ -2,12 +2,12 @@ import React from 'react';
 import serverDown from 'assets/images/server-down.svg';
 import { Link } from 'react-router-dom';
 
-const ServerDown = ({ title, image, subtitle }) => {
+const ServerDown = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen w-full select-none">
+    <div className="flex flex-col items-center justify-center h-screen w-full text-center select-none gap-5">
       <p className="text-4xl">OOPS! SERVER IS NOT RUNNING</p>
-      <img src={serverDown} alt="Not found" className="h-96 " />
-      <div className="text-xl w-120 text-center">
+      <img src={serverDown} alt="Not found" className="w-3/4 md:w-120" />
+      <div className="text-xl w-full md:w-120">
         Server is not running. Please try again after sometime when server is up and running.
         <div>or</div>
         <div>

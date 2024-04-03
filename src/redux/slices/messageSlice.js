@@ -81,13 +81,18 @@ export const messages = createSlice({
     },
     clearCount: (state) => {
       state.count = 0;
+    },
+    clearAll: (state) => {
+      state.count = 0;
+      state.inbox = [];
+      state.messages = [];
     }
   }
 });
 
 export const { setMessages, addMessage } = messages.actions;
 export const { setInbox, clearInbox, newMessage, updateInbox } = messages.actions;
-export const { setCount, increaseCount, descreaseCount, clearCount } = messages.actions;
+export const { setCount, increaseCount, descreaseCount, clearCount, clearAll } = messages.actions;
 
 export const selectMessages = (state) => state.messages.messages;
 export const selectInbox = (state) => state.messages.inbox;

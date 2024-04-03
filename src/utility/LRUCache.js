@@ -10,7 +10,6 @@ class LRUCache {
     if (!this.cache.has(key)) {
       return false;
     }
-
     const v = this.cache.get(key);
     this.cache.delete(key);
     this.cache.set(key, v);

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { check } from 'assets/icons';
 import { friendService, toastService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { useDispatch } from 'react-redux';

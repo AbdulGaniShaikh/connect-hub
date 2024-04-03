@@ -44,8 +44,8 @@ const getFriendRequests = (userId, pageNumber) => {
   });
 };
 
-const getFriends = (userId, pageNumber) => {
-  return axios.get(`${userUrl}/${userId}/friends`, { withCredentials: true, params: { pageNumber, pageSize } });
+const getFriends = (userId, pageNumber, size = pageSize) => {
+  return axios.get(`${userUrl}/${userId}/friends`, { withCredentials: true, params: { pageNumber, size } });
 };
 
 const friendService = {

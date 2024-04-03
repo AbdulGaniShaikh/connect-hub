@@ -15,8 +15,9 @@ import Linkify from './Linkify';
 import ProfileImage from './ProfileImage';
 
 const Post = (props) => {
-  const { postId, totalComments, text, imageId, createDate, userId, username, profileImageId } = props;
-  const [totalLikes, setTotalLikes] = useState(props.totalLikes | 0);
+  const { postId, text, imageId, createDate, userId, username, profileImageId } = props;
+  const [totalLikes, setTotalLikes] = useState(props.totalLikes || 0);
+  const [totalComments, setTotalComments] = useState(props.totalComments || 0);
   const defaultErrorBehavior = useErrorBehavior();
 
   const id = useSelector(selectUserInfo)?.userId;
@@ -139,6 +140,7 @@ const Post = (props) => {
     try {
       await postService.postComment(postId, comment, id);
       toastService.success('New comment added');
+      setTotalComments(totalComments + 1);
       setComment('');
     } catch (error) {
       defaultErrorBehavior(error);
@@ -163,17 +165,17 @@ const Post = (props) => {
   }, [postId, id]);
 
   return (
-    <div className="grid grid-flow-row   p-5 w-full">
+    <div className="grid grid-flow-row p-5 w-full">
       <div className="flex justify-between items-center w-full">
         <Link to={`/users/${userId}`} className="flex justify-start items-center w-fit">
           <ProfileImage id={profileImageId} />
-          <div className=" focus:outline-none flex-1 text-sm mx-2 ">
-            <p className="font-medium">{username ? username : 'username'}</p>{' '}
-            <p className="text-xs font-thin">uploaded on {date}</p>
+          <div className=" focus:outline-none flex-1 text-sm mx-2">
+            <p className="font-medium line-clamp-1">{username ? username : 'username'}</p>
+            <p className="text-xs font-thin line-clamp-1">uploaded on {date}</p>
           </div>
         </Link>
         <Menu cancelItem={true}>
-          <Link to={`/posts/${postId}`} target="_blank">
+          <Link to={`/posts/${postId}`}>
             <MenuItem value="Go to post" icon="fa-solid fa-up-right-from-square" />
           </Link>
           <MenuItem
@@ -183,10 +185,10 @@ const Post = (props) => {
             value="Copy link"
             icon="fa-regular fa-copy"
           />
-          <Link to={`/inbox/${userId}`} target="_blank">
+          <Link to={`/inbox/${userId}`}>
             <MenuItem value={`Message "${username}"`} icon="fa-regular fa-message" />
           </Link>
-          <Link to={`/users/${userId}`} target="_blank">
+          <Link to={`/users/${userId}`}>
             <MenuItem value={`Visit ${username}'s profile`} icon="fa-regular fa-user" />
           </Link>
         </Menu>
@@ -242,7 +244,13 @@ const Post = (props) => {
         }}
         show={showComments}
       >
-        <Comments postId={postId} onCloseClick={() => setShowComments(false)} />
+        <Comments
+          postId={postId}
+          onCloseClick={() => setShowComments(false)}
+          onNewCommentAdd={() => {
+            setTotalComments(totalComments + 1);
+          }}
+        />
       </Model>
 
       <Model
