@@ -33,6 +33,9 @@ export const userInfo = createSlice({
     },
     updateCoverImageId: (state, action) => {
       state.user.coverImageId = action.payload;
+    },
+    clearUser: (state) => {
+      state.user = {};
     }
   }
 });
@@ -46,7 +49,8 @@ export const {
   updateTotalPost,
   decrementTotalFriendsCount,
   incrementTotalFriendsCount,
-  incrementTotalPostsCount
+  incrementTotalPostsCount,
+  clearUser
 } = userInfo.actions;
 
 export const selectUserInfo = (state) => state.userInfo.user;

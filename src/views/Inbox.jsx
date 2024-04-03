@@ -3,14 +3,13 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserInfo } from './../redux/slices/userInfoSlice';
 import { selectInbox, setInbox, updateInbox } from './../redux/slices/messageSlice';
-import { imageUrl } from 'global';
-import { user } from 'assets/icons';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { Link } from 'react-router-dom';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import chatService from 'service/chatService';
 import { userService } from 'service';
 import ProfileImage from 'components/shared/ProfileImage';
+import BackButton from 'components/buttons/BackButton';
 
 const Inbox = () => {
   const { userId } = useSelector(selectUserInfo);
@@ -48,7 +47,10 @@ const Inbox = () => {
   return (
     <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
       <div>
-        <p className="font-medium pb-2">Messages</p>
+        <div className="font-medium pb-2">
+          <BackButton />
+          Messages
+        </div>
         {loading &&
           Array(5)
             .fill(1)

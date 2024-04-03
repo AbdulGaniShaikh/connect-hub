@@ -89,10 +89,10 @@ const ForgotPassword = () => {
   return (
     <div className="grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
-      <div className="z-10 min-h-screen flex justify-center items-center mx-10 max-md:my-10">
-        <div className="grid grid-flow-row grid-cols-2 max-md:grid-cols-1 bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl border border-lightHover dark:border-darkHover p-10 shadow-lg  gap-3 max-sm:w-full">
+      <div className="z-10 min-h-screen flex justify-center items-center sm:mx-10 sm:my-10">
+        <div className="grid grid-flow-row grid-cols-2 max-md:grid-cols-1 bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark sm:rounded-3xl border border-lightHover dark:border-darkHover p-10 shadow-lg  gap-3 max-sm:w-full">
           <div className="col-span-2 max-md:col-span-1">
-            <h1 className="font-medium text-4xl	">Forgot Password</h1>
+            <h1 className="font-medium text-4xl ">Forgot Password</h1>
             <p>Enter the email associated with your account and we'll send you OTP to reset your password.</p>
           </div>
 
@@ -138,9 +138,10 @@ const ForgotPassword = () => {
             </>
           )}
 
-          <div className={otpSent ? 'flex justify-center items-end' : 'flex justify-center items-center'}>
+          <div className={`flex justify-center ${otpSent ? 'items-end' : 'items-center'}`}>
             <SubmitButton text={otpSent ? 'Reset password' : 'Send OTP'} onClick={onClick} />
           </div>
+
           <div className="flex flex-row justify-between">
             <p
               className="text-primaryColor text-sm place-self-end cursor-pointer"
@@ -161,6 +162,14 @@ const ForgotPassword = () => {
               </p>
             )}
           </div>
+          <p
+            className="text-primaryColor text-sm place-self-end cursor-pointer"
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back to login
+          </p>
         </div>
       </div>
     </div>

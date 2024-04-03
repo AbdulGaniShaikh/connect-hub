@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { authService, toastService } from 'service';
 import { check } from 'assets/icons';
+import notFoundImage from 'assets/images/404.svg';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 
 const VerifyAccount = () => {
@@ -10,7 +11,6 @@ const VerifyAccount = () => {
   const token = useSearchParams()[0].get('token');
   const [loading, setLoading] = useState(true);
   const [statusCode, setStatusCode] = useState(0);
-  const defaultErrorBehavior = useErrorBehavior();
 
   const fetchVerificationStatus = async () => {
     setLoading(true);
@@ -18,10 +18,13 @@ const VerifyAccount = () => {
       await authService.verifyEmail(email, token);
       setStatusCode(200);
     } catch (error) {
-      defaultErrorBehavior(error);
-      const status = error.response?.status;
-      if (status) {
-        setStatusCode(status);
+      const res = error.response;
+      if (res) {
+        toastService.error(res.data.message);
+        const status = res?.status;
+        if (status) {
+          setStatusCode(status);
+        }
       }
     } finally {
       setLoading(false);
@@ -64,13 +67,14 @@ const Success = ({ email }) => {
 
 const NotFound = ({ email }) => {
   return (
-    <div className="flex flex-col gap-y-3 items-center justify-center">
-      <div className="bg-green-500 rounded-full p-5">
-        <i className="fa-solid fa-close text-9xl"></i>
-      </div>
+    <div className="flex flex-col gap-5 items-center justify-center p-5 text-center">
+      <img src={notFoundImage} alt="Not found" className="w-3/4 md:w-120" />
+
       <h1 className="text-5xl">Verification Error!</h1>
-      <p className="text-xl text-center">
+      <p className="text-xl">
         Your email <b> {email} </b> cannot be verified. <br />
+      </p>
+      <p>
         Either the email provided doesn't exists or token is wrong. Please check the token or go to{' '}
         <Link to={'/auth/sign-up'} className="text-primaryColor">
           Sign Up
@@ -92,17 +96,17 @@ const Unauthorized = ({ email }) => {
     }
   };
   return (
-    <div className="flex flex-col gap-y-3 items-center justify-center">
-      <div className="bg-green-500 rounded-full p-5">
+    <div className="flex flex-col gap-5 text-center items-center justify-center">
+      <div className="bg-red-500 rounded-full p-5">
         <i className="fa-solid fa-close text-9xl"></i>
       </div>
       <h1 className="text-5xl">Verification Error!</h1>
       <p className="text-xl text-center">
         Your email <b> {email} </b> cannot be verified. <br />
         Seems the like token you provided is expired. Click{' '}
-        <p className="text-primaryColor" onClick={resendVerificationLink}>
+        <span className="text-primaryColor cursor-pointer" onClick={resendVerificationLink}>
           here
-        </p>{' '}
+        </span>{' '}
         to generate new token to verify your email
       </p>
     </div>

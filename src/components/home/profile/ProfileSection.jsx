@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom/dist';
 import { useDispatch } from 'react-redux';
-import { updateCoverImageId, updateProfileImageId } from './../../../redux/slices/userInfoSlice';
+import {
+  decrementTotalFriendsCount,
+  incrementTotalFriendsCount,
+  updateCoverImageId,
+  updateProfileImageId
+} from './../../../redux/slices/userInfoSlice';
 import { friendService, toastService, userService } from 'service';
 import { HttpStatusCode } from 'axios';
 import { imageUrl } from 'global';
@@ -13,6 +18,7 @@ import Button from 'components/buttons/Button';
 import NegativeButton from 'components/buttons/NegativeButton';
 import NeutralButton from 'components/buttons/NeutralButton';
 import PositiveButton from 'components/buttons/PositiveButton';
+import { flipFlag, removeRequest } from './../../../redux/slices/friendRequestsSlice';
 
 const ProfileSection = (props) => {
   const coverImgRef = useRef(null);
@@ -262,6 +268,7 @@ const RelationFRSent = (props) => {
 
 const RelationFRRecieved = (props) => {
   const { setRelation, friendRequestId } = props;
+  const dispatch = useDispatch();
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
   const defaultErrorBehavior = useErrorBehavior();
@@ -272,6 +279,8 @@ const RelationFRRecieved = (props) => {
       await friendService.acceptFriendRequest(friendRequestId);
       setRelation('FRIENDS');
       toastService.success('Accepted friend request');
+      dispatch(removeRequest(friendRequestId));
+      dispatch(incrementTotalFriendsCount());
     } catch (error) {
       defaultErrorBehavior(error);
     } finally {
@@ -284,6 +293,7 @@ const RelationFRRecieved = (props) => {
       await friendService.rejectFriendRequest(friendRequestId);
       setRelation('NONE');
       toastService.success('Rejected friend request');
+      dispatch(removeRequest(friendRequestId));
     } catch (error) {
       defaultErrorBehavior(error);
     } finally {
@@ -303,12 +313,15 @@ const RelationFriend = (props) => {
   const { setRelation, userId, visitorId } = props;
   const [loading, setLoading] = useState(false);
   const defaultErrorBehavior = useErrorBehavior();
+  const dispatch = useDispatch();
 
   const unfriend = async () => {
     setLoading(true);
     try {
       await friendService.unfriend(visitorId, userId);
       setRelation('NONE');
+      dispatch(decrementTotalFriendsCount());
+      dispatch(flipFlag());
       toastService.success('Unfriended');
     } catch (error) {
       defaultErrorBehavior(error);

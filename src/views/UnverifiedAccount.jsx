@@ -3,16 +3,13 @@ import { setUserInfo } from './../redux/slices/userInfoSlice';
 import { authService, storageService, toastService, userService } from 'service';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HttpStatusCode } from 'axios';
-import emailImg from 'assets/icons/email.svg';
-import Spinner from 'components/shared/Spinner';
+import emailImg from 'assets/images/email.svg';
 import useLogout from 'hooks/useLogout';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import NegativeButton from 'components/buttons/NegativeButton';
 
 const UnverifiedAccount = () => {
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logout] = useLogout();
@@ -30,7 +27,6 @@ const UnverifiedAccount = () => {
   const loadData = async (userId) => {
     try {
       const res = await userService.getUser(userId);
-
       dispatch(setUserInfo(res.data.payload));
       if (res.data.payload.verified) {
         navigate('/');
@@ -69,7 +65,7 @@ const UnverifiedAccount = () => {
           to resend the verification mail
         </p>
         <div>
-          <NegativeButton text="Logout" onClick={logout} loading={loading} />
+          <NegativeButton text="Logout" onClick={logout} />
         </div>
       </div>
     </div>

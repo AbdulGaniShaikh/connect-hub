@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { selectUserInfo } from './../../redux/slices/userInfoSlice';
 
 export default function Comments(props) {
-  const { onCloseClick, postId } = props;
+  const { onCloseClick = () => {}, postId = '', onNewCommentAdd = () => {} } = props;
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -22,6 +22,7 @@ export default function Comments(props) {
       await postService.postComment(postId, comment, userId);
       setComments([{ userId, profileImageId, username, comment, date: new Date() }, ...comments]);
       setComment('');
+      onNewCommentAdd();
     } catch (error) {
       defaultErrorBehavior(error);
     }

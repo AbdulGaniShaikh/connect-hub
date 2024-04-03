@@ -17,10 +17,11 @@ const useSocket = (userId) => {
     dispatch(addMessage(body));
 
     if (path !== `/inbox/${body.senderId}` && body.senderId !== senderId) {
-      // dispatch(increaseCount(body.senderId));
       dispatch(newMessage({ body, userId: senderId }));
     }
   };
+
+  const onNotificationRecieved = (payload) => {};
 
   const connect = (userId) => {
     if (stompClient && stompClient.connected) {
@@ -38,6 +39,7 @@ const useSocket = (userId) => {
 
   const onConnected = () => {
     stompClient.subscribe('/user/' + senderId + '/private', onMessageRecieved);
+    stompClient.subscribe('/user/' + senderId + '/notification', onNotificationRecieved);
   };
 
   const publishMessage = (receiverId, message, isPost = false) => {

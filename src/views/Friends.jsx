@@ -8,15 +8,19 @@ import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
 import { Pagination } from '@mui/material';
 import useErrorBehavior from 'hooks/useErrorBehavior';
 import ProfileImage from 'components/shared/ProfileImage';
+import BackButton from 'components/buttons/BackButton';
+import { flipFlag } from './../redux/slices/friendRequestsSlice';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
   const { id } = useParams();
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
+  const [pageFlag, setPageFlag] = useState(false);
   const [loading, setLoading] = useState(true);
   const { userId } = useSelector(selectUserInfo);
   const [showMessageButtons, setShowButtons] = useState(false);
   const defaultErrorBehavior = useErrorBehavior();
+  const dispatch = useDispatch();
 
   const fetchFriends = async () => {
     setLoading(true);
@@ -41,16 +45,21 @@ const Friends = () => {
     if (!userId) return;
     if (userId === id) setShowButtons(true);
     fetchFriends();
-  }, [userId, id, page]);
+  }, [userId, id, pageFlag]);
 
   const onUnfriend = (id) => {
     setFriends(friends.filter((user) => user.userId !== id));
+    dispatch(decrementTotalFriendsCount());
+    dispatch(flipFlag());
   };
 
   return (
     <div className="h-full w-full grid grid-flow-row p-5 gap-5">
       <div>
-        <p className="font-medium pb-2">Friends</p>
+        <div className="font-medium pb-2">
+          <BackButton />
+          Friends
+        </div>
         {loading &&
           Array(5)
             .fill(1)
@@ -79,6 +88,7 @@ const Friends = () => {
             page={page.pageNumber}
             onChange={(_, i) => {
               setPage({ ...page, pageNumber: i });
+              setPageFlag(!pageFlag);
             }}
           />
         </div>
@@ -89,7 +99,6 @@ const Friends = () => {
 
 const Friend = (props) => {
   const { profileImageId, username, email, userId, visitorId, showMessageButtons, onUnfriend } = props;
-  const dispatch = useDispatch();
   const defaultErrorBehavior = useErrorBehavior();
 
   const onUnfriendClick = async () => {
@@ -97,7 +106,6 @@ const Friend = (props) => {
       await friendService.unfriend(visitorId, userId);
       onUnfriend(userId);
       toastService.success(`Unfriended ${username}`);
-      dispatch(decrementTotalFriendsCount());
     } catch (error) {
       defaultErrorBehavior(error);
     }

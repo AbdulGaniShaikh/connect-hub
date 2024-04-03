@@ -1,4 +1,5 @@
 import { Pagination } from '@mui/material';
+import BackButton from 'components/buttons/BackButton';
 import UserProfileRectangle from 'components/home/friend-sidebar/UserProfileRectangle';
 import NoData from 'components/shared/NoData';
 import UserCardSkeleton from 'components/skeletons/UserCardSkeleton';
@@ -12,15 +13,18 @@ const Search = () => {
   const [searchRes, setSearchRes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState({ pageNumber: 1, totalPages: 0 });
+  const [pageFlag, setPageFlag] = useState(false);
   const [resultSize, setResultSize] = useState(0);
   const defaultErrorBehavior = useErrorBehavior();
 
   const onChange = (e) => {
     setSearch(e.target.value);
   };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   const onKeyUp = (e) => {
     if (e.key !== 'Enter') {
       return;
@@ -34,12 +38,13 @@ const Search = () => {
   };
 
   useEffect(() => {
+    console.log('in useEffect');
     if (search.trim().length < 3) {
       return;
     }
     const getData = setTimeout(() => {
       setPage({ ...page, pageNumber: 1 });
-      fetchSearchResults();
+      fetchSearchResults('search changed');
     }, 1000);
 
     return () => clearTimeout(getData);
@@ -51,9 +56,10 @@ const Search = () => {
       return;
     }
     fetchSearchResults();
-  }, [page]);
+  }, [pageFlag]);
 
-  const fetchSearchResults = async () => {
+  const fetchSearchResults = async (message) => {
+    console.log(message);
     setLoading(true);
     try {
       const res = await userService.search(search, Math.max(0, page.pageNumber - 1));
@@ -73,6 +79,7 @@ const Search = () => {
     <div className="h-full w-full grid grid-flow-row p-5 gap-y-5">
       <div className="flex gap-y-3 flex-col">
         <div className="flex items-center px-3 border border-lightHover dark:border-darkHover  text-sm rounded-lg focus:ring-4 ring-lightHover dark:ring-darkHover focus:border-transparent focus:outline-none hover:ring-4 ease-linear duration-200">
+          <BackButton />
           <input
             alt="search"
             type="text"
@@ -81,6 +88,7 @@ const Search = () => {
             placeholder="Search ----> Press 'Enter' to get results."
             autoComplete="off"
             value={search}
+            autoFocus={true}
             onChange={onChange}
             className="px-3 py-2.5 focus:outline-none w-full bg-lightBg dark:bg-darkBg"
             onKeyUp={onKeyUp}
@@ -111,6 +119,7 @@ const Search = () => {
             page={page.pageNumber}
             onChange={(_, i) => {
               setPage({ ...page, pageNumber: i });
+              setPageFlag(!pageFlag);
             }}
           />
         </div>

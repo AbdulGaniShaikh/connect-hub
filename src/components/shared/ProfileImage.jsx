@@ -21,26 +21,12 @@ const ProfileImage = ({ id = '', height = 'circleImage', width = 'circleImage' }
         setLoading(false);
       }
     };
-    if (id === '') return;
-    fetchImage();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const res = await imageService.get(id);
-        setImage(res);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     if (!isImageVisible) return;
     if (id === '') return;
     if (image !== null) return;
     fetchImage();
   }, [isImageVisible, image, id]);
+
   return (
     <div
       ref={imageRef}

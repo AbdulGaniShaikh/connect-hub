@@ -75,8 +75,8 @@ const SignUp = () => {
   return (
     <div className="grid grid-cols-1">
       <img src={Waves} alt="waves" className="z-10 fixed top-0 rotate-180" />
-      <div className="z-10 min-h-screen flex justify-center items-center mx-10 max-md:my-10">
-        <div className="grid grid-flow-row grid-cols-2 max-md:grid-cols-1 bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark rounded-3xl border border-lightHover dark:border-darkHover p-10 shadow-lg  gap-3 max-sm:w-full">
+      <div className="z-10 min-h-screen flex justify-center items-center sm:mx-10 sm:my-10">
+        <div className="grid grid-flow-row grid-cols-2 max-md:grid-cols-1 bg-lightBg text-colorOnLight dark:bg-darkBg dark:text-colorOnDark sm:rounded-3xl border border-lightHover dark:border-darkHover p-10 shadow-lg  gap-3 max-sm:w-full">
           <div className="col-span-2 max-md:col-span-1">
             <h1 className="font-medium text-4xl	">ConnectHub</h1>
             <p>Create a new account.</p>
