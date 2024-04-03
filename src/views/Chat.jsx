@@ -13,6 +13,7 @@ import useErrorBehavior from 'hooks/useErrorBehavior';
 import Linkify from 'components/shared/Linkify';
 import ProfileImage from 'components/shared/ProfileImage';
 import Divider from 'components/shared/Divider';
+import useInterval from 'hooks/useInterval';
 
 const Chat = () => {
   const { id } = useParams();
@@ -202,31 +203,47 @@ const Chat = () => {
 };
 
 const ProfileChat = (props) => {
-  const { userId, username, profileImageId, lastSeen, email } = props;
+  const { userId, lastSeen, username, profileImageId, email } = props;
   const [isActive, setIsActive] = useState(false);
   const [lastSeenText, setLastSeenText] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    var last = new Date(lastSeen);
-    var currentDate = new Date();
-
-    if ((currentDate.getTime() - last.getTime()) / (1000 * 60) <= 1) {
-      setIsActive(true);
-      return;
-    }
-    const options = {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
+  const convertToLastSeenText = (lastSeenParam) => {
     try {
-      setLastSeenText(new Intl.DateTimeFormat('en-US', options).format(new Date(lastSeen)));
+      var last = new Date(lastSeenParam);
+      var currentDate = new Date();
+
+      if ((currentDate.getTime() - last.getTime()) / (1000 * 60) <= 1) {
+        setIsActive(true);
+        return;
+      }
+      const options = {
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      setLastSeenText(new Intl.DateTimeFormat('en-US', options).format(new Date(lastSeenParam)));
     } catch (error) {
       setLastSeenText(email);
     }
+  };
+
+  useEffect(() => {
+    if (lastSeen) convertToLastSeenText(lastSeen);
   }, [lastSeen]);
+
+  useInterval(async () => {
+    try {
+      console.log('fetching lastseen');
+      const res = await userService.fetchLastSeen(userId);
+      const fetchedDate = res.data.lastSeen || false;
+      if (fetchedDate) {
+        convertToLastSeenText(fetchedDate);
+      }
+    } catch (error) {}
+  }, 15000);
+
   return (
     <div className="relative grid gap-y-3 h-fit pt-3">
       <div
